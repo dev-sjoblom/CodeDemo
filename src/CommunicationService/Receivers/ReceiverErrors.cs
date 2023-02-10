@@ -12,4 +12,9 @@ public static class ReceiverErrors
     public static Error NotFound => Error.NotFound(
         code: "Receiver.NotFound",
         description: "Receiver not found");
+    
+    
+    public static Error NameAlreadyExists => Error.Conflict(
+        code: "Receiver.NameAlreadyExists",
+        description: $"Receiver name already taken.");
 }

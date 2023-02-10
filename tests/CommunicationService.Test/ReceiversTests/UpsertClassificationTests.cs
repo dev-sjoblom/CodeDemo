@@ -109,7 +109,7 @@ public partial class ReceiverTest
         //var classification = dbContext.AddClassification(classificationName);
         dbContext.AddReceiverWithClassifications(receiverName, receiverEmail, new[] { classificationName });
         var receiver =
-            dbContext.AddReceiverWithClassifications($"{receiverName}A", $"{receiverEmail}A", new[] { classificationName });
+            dbContext.AddReceiverWithClassifications($"{receiverName}A", $"{receiverEmail}A", new[] { $"{classificationName}A" });
 
         await dbContext.SaveChangesAsync();
 

@@ -4,6 +4,7 @@ using CommunicationService.MetadataTypes;
 using CommunicationService.MetadataTypes.Models;
 using CommunicationService.Receivers.DataModels;
 using CommunicationService.Receivers.Models;
+using Npgsql;
 using static CommunicationService.Receivers.ReceiverErrors;
 
 namespace CommunicationService.Receivers;
@@ -13,6 +14,7 @@ public class ReceiverRepository : IReceiverRepository
     private CommunicationDbContext DbContext { get; }
     private IClassificationRepository ClassificationRepository { get; }
     private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private const string ixReceiverName = "IX_Receiver_UniqueName";
 
     public ReceiverRepository(CommunicationDbContext dbContext, 
         IClassificationRepository classificationRepository,
@@ -60,11 +62,24 @@ public class ReceiverRepository : IReceiverRepository
                 return NotFound;
             
             receiver.Classifications.Add(classification);
-        }        
-        
-        await DbContext.SaveChangesAsync(cancellationToken);
+        }
 
-        return Result.Created;
+        try
+        {
+            await DbContext.SaveChangesAsync(cancellationToken);
+
+            return Result.Created;
+        }
+        catch (DbUpdateException updateException) when (updateException.InnerException is PostgresException)
+        {
+            var message = updateException.InnerException.Message;
+            if (message.Contains(ixReceiverName))
+            {
+                return NameAlreadyExists;
+            }
+
+            throw;
+        }
     }
 
     public async Task<ErrorOr<Deleted>> DeleteReceiver(Guid id, CancellationToken cancellationToken)
@@ -173,8 +188,21 @@ public class ReceiverRepository : IReceiverRepository
             receiver.Metadatas.Add(metadata);
         }
 
-        await DbContext.SaveChangesAsync(cancellationToken);
-        
+        try
+        {
+            await DbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException updateException) when (updateException.InnerException is PostgresException)
+        {
+            var message = updateException.InnerException.Message;
+            if (message.Contains(ixReceiverName))
+            {
+                return NameAlreadyExists;
+            }
+
+            throw;  
+        }
+
         return new UpsertedReceiverResult(RegisteredAsNewItem: registerAsNew);
     }
 }
