@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.DataModels;
 using CommunicationService.Classifications.Models;
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes;
 using Npgsql;
 using static CommunicationService.Classifications.ClassificationErrors;
 
@@ -10,49 +10,33 @@ public class ClassificationRepository : IClassificationRepository
 {
     private const string ixClassificationName = "IX_Classification_Name";
     private CommunicationDbContext DbContext { get; }
+    private IMetadataTypeRepository MetadataTypeRepository { get; }
 
-    public ClassificationRepository(CommunicationDbContext dbContext)
+    public ClassificationRepository(CommunicationDbContext dbContext, IMetadataTypeRepository metadataTypeRepository)
     {
         DbContext = dbContext;
+        MetadataTypeRepository = metadataTypeRepository;
     }
 
     public async Task<ErrorOr<Created>> CreateClassification(Classification classification, string[] metadataTypes,
         CancellationToken cancellationToken)
     {
-        DbContext.Classification.Add(classification);
+        var existingResult = await GetClassificationByName(classification.Name, cancellationToken);
+        if (existingResult.IsError && existingResult.FirstError != NotFound)
+            return existingResult.Errors;
+        if (!existingResult.IsError)
+            return NameAlreadyExists;
 
-        foreach (var name in metadataTypes)
-        {
-            var task = DbContext.MetadataType.Where(x => x.Name == name)
-                .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var createdResult = await UpsertClassification(classification, metadataTypes, cancellationToken);
+        if (createdResult.IsError)
+            return createdResult.Errors;
 
-            if (await task is not MetadataType metadataType)
-                return InvalidMetadataType(name);
-            
-            classification.MetadataTypes.Add(metadataType);
-        }
-
-        try
-        {
-            await DbContext.SaveChangesAsync(cancellationToken);
-            
-            return Result.Created;
-        }
-        catch (DbUpdateException updateException) when (updateException.InnerException is PostgresException)
-        {
-            var message = updateException.InnerException.Message;
-            if (message.Contains(ixClassificationName))
-            {
-                return NameAlreadyExists;
-            }
-
-            throw;
-        }
+        return Result.Created;
     }
 
     public async Task<ErrorOr<Deleted>> DeleteClassification(Guid id, CancellationToken cancellationToken)
     {
-        var classification = DbContext.Classification.FirstOrDefault(x => x.Id == id);
+        var classification = await DbContext.Classification.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (classification is null)
             return NotFound;
 
@@ -64,12 +48,12 @@ public class ClassificationRepository : IClassificationRepository
 
     public async Task<ErrorOr<Classification>> GetClassificationById(Guid id, CancellationToken cancellationToken)
     {
-        var task = DbContext.Classification
+        var classification = await DbContext.Classification
             .Include(x => x.MetadataTypes)
             .Where(x => x.Id == id)
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
         
-        if (await task is not Classification classification)
+        if (classification is null)
             return NotFound;
 
         return classification;
@@ -77,12 +61,12 @@ public class ClassificationRepository : IClassificationRepository
 
     public async Task<ErrorOr<Classification>> GetClassificationByName(string name, CancellationToken cancellationToken)
     {
-        var task = DbContext.Classification
+        var classification = await DbContext.Classification
             .Include(x => x.MetadataTypes)
             .Where(x => x.Name == name)
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
         
-        if (await task is not Classification classification)
+        if (classification is null)
             return NotFound;
 
         return classification;
@@ -101,42 +85,40 @@ public class ClassificationRepository : IClassificationRepository
         string[] metadataTypes,
         CancellationToken cancellationToken)
     {
-        var registerAsNew = !await DbContext.Classification.AnyAsync(x => x.Id == data.Id, cancellationToken: cancellationToken);
+        var isCreated = false;
+        Classification? classification;
         
-        var classification = data;
+        var existingResult = await GetClassificationById(data.Id, cancellationToken);
+        switch (existingResult.IsError)
+        {
+            case true when existingResult.FirstError == NotFound:
+                isCreated = true;
+                classification = data;
+                DbContext.Classification.Add(classification);
+                break;
+            case true:
+                return existingResult.Errors;
+            default:
+                classification = existingResult.Value;
+                classification.Name = data.Name; 
+                DbContext.Classification.Update(classification);
+                break;
+        }
         
-        if (registerAsNew)
-        {
-            DbContext.Classification.Add(classification);
-        }
-        else
-        {
-            var existing = await GetClassificationById(data.Id, cancellationToken);
-            if (existing.IsError)
-                return existing.Errors;
-            classification = existing.Value;
-            classification.Name = data.Name; 
-            
-            DbContext.Classification.Update(classification);
-
-        }
-
         classification.MetadataTypes.RemoveAll(x => true);
         foreach (var name in metadataTypes)
         {
-            var task = DbContext.MetadataType.Where(x => x.Name == name)
-                .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-            
-            if (await task is not MetadataType metadataType)
-                return NotFound;
-            
-            classification.MetadataTypes.Add(metadataType);
+            var metadataResult = await MetadataTypeRepository.GetMetadataTypeByName(name, cancellationToken);
+            if (metadataResult.IsError)
+                return metadataResult.Errors;
+            classification.MetadataTypes.Add(metadataResult.Value);
         }
+        
         try
         {
             await DbContext.SaveChangesAsync(cancellationToken);
         
-            return new UpsertedClassificationResult(RegisteredAsNewItem: registerAsNew);
+            return new UpsertedClassificationResult(RegisteredAsNewItem: isCreated);
         }
         catch (DbUpdateException updateException) when (updateException.InnerException is PostgresException)
         {

@@ -12,17 +12,19 @@ Version: Draft 1 (Work in progress)
 - .NET 7 sdk
 - Postgresql
 
-# Techniques
+# Coding
 - File Structure: Vertical Slicing/Feature Folder
 - Dependency Injection (DI)
 - Inversion of Control (IOC)
-- Test Driven Development (TDD): Testing input & output to service, 
-admin access required.
-- Clean Code'ish: Refactoring needed
+- Test Driven Development (TDD): Testing input & output to service, admin access required.
 - Error/Result: Return error instead of throwing
 - Crud rest api
 - Repository Pattern
 - WarningAsError
+- Nullible
+- Clean Code'ish: Refactoring needed
+- Asynchronous
+
 
 # Project references
 ## Service
@@ -40,10 +42,13 @@ admin access required.
 - [Serilog - logging](https://github.com/serilog/serilog)
 - [Fluent Docker](https://github.com/mariotoffia/FluentDocker/)
 - Security: Key or username/password?
-- Reactoring: Extract generic code to class libary
+- Reactoring: Hide boilerplate code
+- Validation 
+- Null Guards
 
-# 
+# Maybe
 - [Marten - postgre as document db / event sourcing](https://github.com/JasperFx/marten)
 - [rabbit mq - message broker](https://www.rabbitmq.com/)  Pub Sub ?
 - [Bogus](https://github.com/bchavez/Bogus) Test/Demo data generator
 - Dto Mapper?
+- Integration testing
