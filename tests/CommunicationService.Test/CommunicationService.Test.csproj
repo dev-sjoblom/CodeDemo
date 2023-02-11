@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\CommunicationService\CommunicationService.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+
+        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FakeItEasy" Version="7.3.1" />
+        <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="AutoFixture.AutoFakeItEasy" Version="4.17.0" />
+        <PackageReference Include="AutoFixture.Xunit2" Version="4.17.0" />
+        <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="xunit.assert" Version="2.4.2" />
+
+        <PackageReference Include="FluentAssertions" Version="6.9.0" />
+        <PackageReference Include="FluentAssertions.Web" Version="1.2.5" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="appsettings.auto-test.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+    
+</Project>

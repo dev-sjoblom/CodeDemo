@@ -1,0 +1,3 @@
+namespace CommunicationService.Classifications.Models;
+
+public record struct UpsertedClassificationResult(bool RegisteredAsNewItem);
