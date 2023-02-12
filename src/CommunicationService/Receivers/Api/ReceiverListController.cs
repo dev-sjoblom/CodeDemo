@@ -1,9 +1,12 @@
+using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Data;
 using CommunicationService.Receivers.Fundamental;
 
 namespace CommunicationService.Receivers.Api;
 
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(ReceiverResponse[]), StatusCodes.Status200OK)]
 [Route("[controller]")]
 public class ReceiverListController : ReceiverBaseController
 {

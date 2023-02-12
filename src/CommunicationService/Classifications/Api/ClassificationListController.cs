@@ -1,9 +1,12 @@
+using CommunicationService.Classifications.Api.Model;
 using CommunicationService.Classifications.Data;
 using CommunicationService.Classifications.Fundamental;
 
 namespace CommunicationService.Classifications.Api;
 
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(ClassificationResponse[]), StatusCodes.Status200OK)]
 [Route("[controller]")]
 public class ClassificationListController : ClassificationBaseController
 {

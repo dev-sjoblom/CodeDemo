@@ -5,6 +5,12 @@ using CommunicationService.Classifications.Fundamental;
 namespace CommunicationService.Classifications.Api;
 
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(ClassificationResponse), StatusCodes.Status201Created)]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+[ProducesResponseType(StatusCodes.Status409Conflict)]
 [Route("[controller]")]
 public class ClassificationUpsertController : ClassificationBaseController
 {

@@ -3,6 +3,9 @@ using CommunicationService.Classifications.Data;
 namespace CommunicationService.Classifications.Api;
 
 [ApiController]
+[ProducesResponseType(StatusCodes.Status201Created)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
 [Route("[controller]")]
 public  class ClassificationDeleteController : ClassificationBaseController
 {

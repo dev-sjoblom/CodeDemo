@@ -4,6 +4,7 @@ using CommunicationService.MetadataTypes.Fundamental;
 namespace CommunicationService.MetadataTypes.Api;
 
 [ApiController]
+[Produces("application/json")]
 [Route("[controller]")]
 public class MetadataTypeGetByNameController : MetadataTypeBaseController
 {

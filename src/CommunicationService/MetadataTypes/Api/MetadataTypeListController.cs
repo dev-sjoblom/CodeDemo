@@ -1,10 +1,12 @@
+using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.MetadataTypes.Data;
 using CommunicationService.MetadataTypes.Fundamental;
 
 namespace CommunicationService.MetadataTypes.Api;
 
-
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(MetadataTypeResponse[]), StatusCodes.Status200OK)]
 [Route("[controller]")]
 public class MetadataTypeListController : MetadataTypeBaseController
 {
@@ -14,7 +16,7 @@ public class MetadataTypeListController : MetadataTypeBaseController
     {
         MetadataTypeRepository = metadataTypeRepository;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> ListMetadataTypes(CancellationToken cancellationToken)
     {

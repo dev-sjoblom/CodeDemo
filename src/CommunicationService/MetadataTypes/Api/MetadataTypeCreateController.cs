@@ -5,6 +5,10 @@ using CommunicationService.MetadataTypes.Fundamental;
 namespace CommunicationService.MetadataTypes.Api;
 
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(MetadataTypeResponse), StatusCodes.Status201Created)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
 [Route("[controller]")]
 public class MetadataTypeCreateController : MetadataTypeBaseController
 {
