@@ -1,4 +1,5 @@
-using CommunicationService.MetadataTypes.DataModels;
+using CommunicationService.Classifications.Data;
+using CommunicationService.MetadataTypes.Data;
 
 namespace CommunicationService.Test.ClassificationTests.Helpers;
 

@@ -1,4 +1,4 @@
-using CommunicationService.Receivers.DataModels;
+using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Test.ReceiversTests.Helpers;
 

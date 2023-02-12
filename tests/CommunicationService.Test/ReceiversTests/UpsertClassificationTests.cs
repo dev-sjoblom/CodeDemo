@@ -1,4 +1,3 @@
-using CommunicationService.Test.ClassificationTests;
 using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.ReceiversTests.ContractModels;
 using CommunicationService.Test.ReceiversTests.Helpers;
@@ -9,7 +8,7 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string UpsertReceiverUrl(Guid id) => $"/receiver/{id}";
+    private string UpsertReceiverUrl(Guid id) => $"/ReceiverUpsert/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,

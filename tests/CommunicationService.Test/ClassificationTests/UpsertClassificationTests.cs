@@ -5,7 +5,7 @@ namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string UpsertClassificationUrl(Guid id) => $"/Classification/{id}";
+    private string UpsertClassificationUrl(Guid id) => $"/ClassificationUpsert/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
@@ -27,7 +27,8 @@ public partial class ClassificationTests
         var response = await client.PutAsync(UpsertClassificationUrl(Guid.NewGuid()), body);
         var stringContent = await response.Content.ReadAsStringAsync();
         
-        // assert
+        // assert   at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+
         response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
         
         var responseObject = JsonConvert.DeserializeObject<ClassificationResponse>(stringContent)!;

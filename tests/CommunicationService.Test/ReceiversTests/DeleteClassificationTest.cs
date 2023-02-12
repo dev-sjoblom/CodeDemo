@@ -4,7 +4,7 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string DeleteReceiverByIdUrl(Guid id) => $"/receiver/{id}";
+    private string DeleteReceiverByIdUrl(Guid id) => $"/ReceiverDelete/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,

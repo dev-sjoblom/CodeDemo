@@ -1,6 +1,6 @@
-using CommunicationService.Classifications.DataModels;
-using CommunicationService.MetadataTypes.DataModels;
-using CommunicationService.Receivers.DataModels;
+using CommunicationService.Classifications.Data;
+using CommunicationService.MetadataTypes.Data;
+using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Fundamental;
 

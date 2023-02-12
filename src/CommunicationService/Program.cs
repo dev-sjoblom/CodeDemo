@@ -1,6 +1,6 @@
-using CommunicationService.Classifications;
-using CommunicationService.MetadataTypes;
-using CommunicationService.Receivers;
+using CommunicationService.Classifications.Data;
+using CommunicationService.MetadataTypes.Data;
+using CommunicationService.Receivers.Data;
 
 namespace CommunicationService;
 
@@ -24,12 +24,14 @@ public class Program
 
         var app = builder.Build();
         {
-            app.UseExceptionHandler("/error");
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+            else
+            {
+                app.UseExceptionHandler("/error");
             }
 
             app.UseHttpsRedirection();

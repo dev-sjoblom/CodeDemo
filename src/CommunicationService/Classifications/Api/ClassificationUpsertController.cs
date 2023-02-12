@@ -1,5 +1,5 @@
-using CommunicationService.Classifications.Api.Models;
-using CommunicationService.Classifications.DataModels;
+using CommunicationService.Classifications.Api.Model;
+using CommunicationService.Classifications.Data;
 using CommunicationService.Classifications.Fundamental;
 
 namespace CommunicationService.Classifications.Api;
@@ -38,8 +38,4 @@ public class ClassificationUpsertController : ClassificationBaseController
                 : NoContent(),
             Problem);
     }
-    
-
-
-
 }

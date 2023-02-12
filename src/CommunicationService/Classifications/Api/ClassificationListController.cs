@@ -1,3 +1,4 @@
+using CommunicationService.Classifications.Data;
 using CommunicationService.Classifications.Fundamental;
 
 namespace CommunicationService.Classifications.Api;

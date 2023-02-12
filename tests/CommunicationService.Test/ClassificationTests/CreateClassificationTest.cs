@@ -10,7 +10,7 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewClassificationUrl() => $"/classification";
+    private string CreateNewClassificationUrl() => $"/ClassificationCreate";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]

@@ -5,7 +5,7 @@ namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string GetClassificationByIdUrl(Guid id) => $"/Classification/ById/{id}";
+    private string GetClassificationByIdUrl(Guid id) => $"ClassificationGetById/{id}";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]

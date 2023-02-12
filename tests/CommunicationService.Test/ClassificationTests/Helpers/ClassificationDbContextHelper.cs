@@ -1,3 +1,5 @@
+using CommunicationService.Classifications.Data;
+
 namespace CommunicationService.Test.ClassificationTests.Helpers;
 
 public static class ClassificationDbContextHelper

@@ -1,4 +1,4 @@
-using CommunicationService.Receivers.ContractModels;
+using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Test.ReceiversTests.Helpers;
 using Newtonsoft.Json;
 
@@ -6,7 +6,7 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string GetReceiverByIdUrl(Guid id) => $"/receiver/byid/{id}";
+    private string GetReceiverByIdUrl(Guid id) => $"/ReceiverGetById/{id}";
 
     [Theory]
     [InlineAutoMoq(

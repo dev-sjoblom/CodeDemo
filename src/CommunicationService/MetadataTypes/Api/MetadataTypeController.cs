@@ -1,20 +1,19 @@
-using CommunicationService.MetadataTypes.DataModels;
+using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.Fundamental;
 
 namespace CommunicationService.MetadataTypes.Api;
 
-[ApiController]
-[Route("[controller]")]
-public partial class MetadataTypeController : ApiController
+public class MetadataTypeBaseController : ApiController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
-
-    public MetadataTypeController(IMetadataTypeRepository metadataTypeRepository)
+    private const string _metadataTypeGetByIdController = "MetadataTypeGetById";
+    private const string _metadataTypeGetByIdAction = "GetMetadataTypeById";
+    
+    protected CreatedAtActionResult CreatedAtMetadataType(MetadataType metadataType)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        return CreatedAtAction(
+            controllerName: _metadataTypeGetByIdController,
+            actionName: _metadataTypeGetByIdAction,
+            routeValues: new { id = metadataType.Id },
+            value: metadataType.ToMetadataTypeResponse());
     }
-
-    private CreatedAtActionResult CreatedAtGetMetadataType(MetadataType metadataType) => CreatedAtAction(
-        actionName: nameof(GetMetadataTypeById),
-        routeValues: new { id = metadataType.Id },
-        value: metadataType.ToMetadataTypeResponse());
 }

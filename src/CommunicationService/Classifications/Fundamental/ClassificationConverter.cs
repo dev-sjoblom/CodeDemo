@@ -1,5 +1,5 @@
-using CommunicationService.Classifications.Api.Models;
-using CommunicationService.Classifications.DataModels;
+using CommunicationService.Classifications.Api.Model;
+using CommunicationService.Classifications.Data;
 
 namespace CommunicationService.Classifications.Fundamental;
 
