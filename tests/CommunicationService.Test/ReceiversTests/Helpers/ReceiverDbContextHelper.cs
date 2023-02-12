@@ -1,5 +1,5 @@
-using CommunicationService.Receivers.DataModels;
-using CommunicationService.Test.ClassificationTests;
+using CommunicationService.Receivers.Data;
+using CommunicationService.Test.ClassificationTests.Helpers;
 
 namespace CommunicationService.Test.ReceiversTests.Helpers;
 

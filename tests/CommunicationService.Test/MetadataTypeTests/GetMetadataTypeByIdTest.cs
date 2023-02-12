@@ -1,11 +1,11 @@
-using CommunicationService.MetadataTypes.Contracts;
+using CommunicationService.MetadataTypes.Api.Model;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataType/ById/{id}";
+    private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataTypeGetById/{id}";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]

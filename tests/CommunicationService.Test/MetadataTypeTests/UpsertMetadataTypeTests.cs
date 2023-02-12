@@ -1,4 +1,4 @@
-using CommunicationService.Test.ClassificationTests;
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.MetadataTypeTests.ContractModels;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 using Newtonsoft.Json;
@@ -7,7 +7,7 @@ namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataType/{id}";
+    private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataTypeUpsert/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]

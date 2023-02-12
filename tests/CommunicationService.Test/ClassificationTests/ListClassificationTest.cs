@@ -1,10 +1,11 @@
+using CommunicationService.Test.ClassificationTests.Helpers;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string ListClassificationUrl() => "/Classification";
+    private string ListClassificationUrl() => "/ClassificationList";
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
     public async Task ListClassification_WithData_ReturnsList(string classificationName, string metadataName)

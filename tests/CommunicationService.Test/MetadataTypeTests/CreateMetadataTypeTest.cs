@@ -1,5 +1,5 @@
-using CommunicationService.MetadataTypes.Contracts;
-using CommunicationService.Test.ClassificationTests;
+using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 
 namespace CommunicationService.Test.MetadataTypeTests;
@@ -13,7 +13,7 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewMetadataUrl() => $"/MetadataType";
+    private string CreateNewMetadataUrl() => $"/MetadataTypeCreate";
 
     [Theory]
     [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]

@@ -6,7 +6,7 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string ListMetadataType() => "/receiver";
+    private string ListMetadataType() => "/ReceiverList";
 
     [Theory]
     [InlineAutoMoq(

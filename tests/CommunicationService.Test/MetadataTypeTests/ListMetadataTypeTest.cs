@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Contracts;
+using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 using Newtonsoft.Json;
 
@@ -6,7 +6,7 @@ namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string ListMetadataType() => "/MetadataType";
+    private string ListMetadataType() => "/MetadataTypeList";
     [Theory]
     [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
     public async Task ListMetadataTypes_WithData_ReturnsList(string metadataTypeName, string classification)

@@ -8,6 +8,7 @@ public static class ConfigurationHelper
     {
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.auto-test.json", optional: false)
+            .AddJsonFile("appsettings.auto-test.Development.json", optional: true)
             .Build();
         
         return config;

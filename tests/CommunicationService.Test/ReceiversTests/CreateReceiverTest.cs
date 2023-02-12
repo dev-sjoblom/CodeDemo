@@ -12,7 +12,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewReceiverUrl() => $"/receiver";
+    private string CreateNewReceiverUrl() => $"/ReceiverCreate";
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
