@@ -1,3 +1,5 @@
+using CommunicationService.MetadataTypes.DataModels;
+
 namespace CommunicationService.Test.ClassificationTests.Helpers;
 
 public static class ClassificationEntityCreator

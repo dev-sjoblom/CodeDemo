@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CommunicationService.Classifications.DataModels;

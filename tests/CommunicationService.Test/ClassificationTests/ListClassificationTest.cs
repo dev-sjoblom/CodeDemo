@@ -1,3 +1,4 @@
+using CommunicationService.Test.ClassificationTests.Helpers;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ClassificationTests;

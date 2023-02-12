@@ -2,7 +2,7 @@ using CommunicationService.Classifications.DataModels;
 using static System.Char;
 using static CommunicationService.MetadataTypes.MetadataTypeErrors;
 
-namespace CommunicationService.MetadataTypes.Models;
+namespace CommunicationService.MetadataTypes.DataModels;
 
 public partial class MetadataType
 {

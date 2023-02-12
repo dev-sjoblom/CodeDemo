@@ -1,3 +1,5 @@
+using CommunicationService.Test.ClassificationTests.Helpers;
+
 namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests

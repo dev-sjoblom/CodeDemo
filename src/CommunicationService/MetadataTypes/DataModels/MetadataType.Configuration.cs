@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CommunicationService.MetadataTypes.Models;
+namespace CommunicationService.MetadataTypes.DataModels;
 
 public class MetadataTypeModelConfiguration : IEntityTypeConfiguration<MetadataType>
 {

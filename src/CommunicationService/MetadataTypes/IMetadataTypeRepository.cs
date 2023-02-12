@@ -1,4 +1,5 @@
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.Api.DataContract;
+using CommunicationService.MetadataTypes.DataModels;
 
 namespace CommunicationService.MetadataTypes;
 

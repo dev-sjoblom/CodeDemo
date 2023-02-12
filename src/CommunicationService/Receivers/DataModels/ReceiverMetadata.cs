@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 
 namespace CommunicationService.Receivers.DataModels;
 

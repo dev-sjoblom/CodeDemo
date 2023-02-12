@@ -1,6 +1,7 @@
 using CommunicationService.Classifications;
 using CommunicationService.Classifications.DataModels;
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.Api.DataContract;
+using CommunicationService.MetadataTypes.DataModels;
 using Npgsql;
 using static CommunicationService.MetadataTypes.MetadataTypeErrors;
 

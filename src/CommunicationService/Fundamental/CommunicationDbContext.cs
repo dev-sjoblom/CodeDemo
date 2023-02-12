@@ -1,5 +1,5 @@
 using CommunicationService.Classifications.DataModels;
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 using CommunicationService.Receivers.DataModels;
 
 namespace CommunicationService.Fundamental;

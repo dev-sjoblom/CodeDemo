@@ -1,9 +1,19 @@
-using CommunicationService.Classifications.ContractModels;
+using CommunicationService.Classifications.Api.Models;
+using CommunicationService.Classifications.DataModels;
+using CommunicationService.Classifications.Fundamental;
 
-namespace CommunicationService.Classifications;
-
-public partial class ClassificationController
+namespace CommunicationService.Classifications.Api;
+[ApiController]
+[Route("[controller]")]
+public class ClassificationCreateController : ClassificationBaseController
 {
+    private IClassificationRepository ClassificationRepository { get; }
+
+    public ClassificationCreateController(IClassificationRepository classificationRepository)
+    {
+        ClassificationRepository = classificationRepository;
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateClassification(CreateClassificationRequest request,
         CancellationToken cancellationToken)

@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.DataModels;
 
-namespace CommunicationService.MetadataTypes.Models;
+namespace CommunicationService.MetadataTypes.DataModels;
 
 public partial class MetadataType
 {

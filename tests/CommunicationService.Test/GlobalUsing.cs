@@ -6,7 +6,6 @@ global using static CommunicationService.Test.ReceiversTests.Helpers.ReceiversCo
 global using CommunicationService.Test.Fundamental;
 global using Xunit;
 global using System.Net;
-global using CommunicationService.MetadataTypes.Models;
 global using CommunicationService.Test.ClassificationTests.ContractModels;
 global using FluentAssertions;
 global using CommunicationService.Classifications.DataModels;

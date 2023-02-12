@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Contracts;
+using CommunicationService.MetadataTypes.Api.DataContract;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 using Newtonsoft.Json;
 

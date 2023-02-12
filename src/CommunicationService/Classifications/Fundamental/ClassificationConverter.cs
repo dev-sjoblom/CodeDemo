@@ -1,7 +1,7 @@
-using CommunicationService.Classifications.ContractModels;
+using CommunicationService.Classifications.Api.Models;
 using CommunicationService.Classifications.DataModels;
 
-namespace CommunicationService.Classifications;
+namespace CommunicationService.Classifications.Fundamental;
 
 public static class ClassificationConverter
 {

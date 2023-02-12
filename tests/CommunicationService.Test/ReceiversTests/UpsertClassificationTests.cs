@@ -1,4 +1,5 @@
 using CommunicationService.Test.ClassificationTests;
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.ReceiversTests.ContractModels;
 using CommunicationService.Test.ReceiversTests.Helpers;
 using Microsoft.EntityFrameworkCore;

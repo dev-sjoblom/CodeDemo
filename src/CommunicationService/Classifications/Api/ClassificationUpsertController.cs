@@ -1,9 +1,20 @@
-using CommunicationService.Classifications.ContractModels;
+using CommunicationService.Classifications.Api.Models;
+using CommunicationService.Classifications.DataModels;
+using CommunicationService.Classifications.Fundamental;
 
-namespace CommunicationService.Classifications;
+namespace CommunicationService.Classifications.Api;
 
-public partial class ClassificationController
+[ApiController]
+[Route("[controller]")]
+public class ClassificationUpsertController : ClassificationBaseController
 {
+    private IClassificationRepository ClassificationRepository { get; }
+
+    public ClassificationUpsertController(IClassificationRepository classificationRepository)
+    {
+        ClassificationRepository = classificationRepository;
+    }
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpsertClassification(Guid id,
         UpsertClassificationRequest request,
@@ -27,5 +38,8 @@ public partial class ClassificationController
                 : NoContent(),
             Problem);
     }
+    
+
+
 
 }

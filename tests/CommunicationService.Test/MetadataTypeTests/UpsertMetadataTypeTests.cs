@@ -1,4 +1,5 @@
 using CommunicationService.Test.ClassificationTests;
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.MetadataTypeTests.ContractModels;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 using Newtonsoft.Json;

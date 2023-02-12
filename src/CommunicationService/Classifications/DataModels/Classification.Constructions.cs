@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 using static CommunicationService.Classifications.ClassificationErrors;
 
 namespace CommunicationService.Classifications.DataModels;

@@ -1,6 +1,6 @@
-using CommunicationService.MetadataTypes.Contracts;
+using CommunicationService.MetadataTypes.Api.DataContract;
 
-namespace CommunicationService.MetadataTypes;
+namespace CommunicationService.MetadataTypes.Api;
 
 public partial class MetadataTypeController
 {

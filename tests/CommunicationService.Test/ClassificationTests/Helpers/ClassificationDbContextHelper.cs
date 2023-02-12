@@ -1,4 +1,4 @@
-namespace CommunicationService.Test.ClassificationTests;
+namespace CommunicationService.Test.ClassificationTests.Helpers;
 
 public static class ClassificationDbContextHelper
 {

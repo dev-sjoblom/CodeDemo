@@ -1,4 +1,4 @@
-namespace CommunicationService.MetadataTypes;
+namespace CommunicationService.MetadataTypes.Api;
 
 public partial class MetadataTypeController
 {

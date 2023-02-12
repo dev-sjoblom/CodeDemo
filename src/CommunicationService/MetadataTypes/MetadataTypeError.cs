@@ -1,11 +1,13 @@
+using CommunicationService.MetadataTypes.DataModels;
+
 namespace CommunicationService.MetadataTypes;
 
 public static class MetadataTypeErrors
 {
     public static Error InvalidName => Error.Validation(
         code: "MetadataType.InvalidName",
-        description: $"MetadataType name must be at least {Models.MetadataType.MinNameLength}" +
-                     $" characters long and at most {Models.MetadataType.MaxNameLength} characters long.");
+        description: $"MetadataType name must be at least {MetadataType.MinNameLength}" +
+                     $" characters long and at most {MetadataType.MaxNameLength} characters long.");
 
     public static Error NameAlreadyExists => Error.Conflict(
         code: "MetadataType.NameAlreadyExists",

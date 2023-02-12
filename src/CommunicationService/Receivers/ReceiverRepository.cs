@@ -1,7 +1,7 @@
 using CommunicationService.Classifications;
 using CommunicationService.Classifications.DataModels;
 using CommunicationService.MetadataTypes;
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 using CommunicationService.Receivers.DataModels;
 using CommunicationService.Receivers.Models;
 using Npgsql;

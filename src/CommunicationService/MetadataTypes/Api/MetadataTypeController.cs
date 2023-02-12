@@ -1,6 +1,6 @@
-using CommunicationService.MetadataTypes.Models;
+using CommunicationService.MetadataTypes.DataModels;
 
-namespace CommunicationService.MetadataTypes;
+namespace CommunicationService.MetadataTypes.Api;
 
 [ApiController]
 [Route("[controller]")]

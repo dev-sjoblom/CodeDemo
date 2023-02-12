@@ -1,5 +1,6 @@
-using CommunicationService.MetadataTypes.Contracts;
+using CommunicationService.MetadataTypes.Api.DataContract;
 using CommunicationService.Test.ClassificationTests;
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 
 namespace CommunicationService.Test.MetadataTypeTests;
