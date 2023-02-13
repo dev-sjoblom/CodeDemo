@@ -12,11 +12,11 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeCreateController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
 
-    public MetadataTypeCreateController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeCreateController(IMetadataTypeRepositoryWriter repositoryWriter)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        RepositoryWriter = repositoryWriter;
     }
     
     [HttpPost]
@@ -31,7 +31,7 @@ public class MetadataTypeCreateController : MetadataTypeBaseController
         var metadataType = metadataTypeResult.Value;
 
         var createMetadataTypeResult = await
-            MetadataTypeRepository.CreateMetadataType(metadataType, request.Classifications, cancellationToken);
+            RepositoryWriter.CreateMetadataType(metadataType, request.Classifications, cancellationToken);
 
         return createMetadataTypeResult.Match(
             _ => CreatedAtMetadataType(metadataType),

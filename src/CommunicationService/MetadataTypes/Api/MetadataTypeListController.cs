@@ -10,17 +10,17 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeListController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
 
-    public MetadataTypeListController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeListController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
     }
 
     [HttpGet]
     public async Task<IActionResult> ListMetadataTypes(CancellationToken cancellationToken)
     {
-        var metadataTypesResult = await MetadataTypeRepository.ListMetadataTypes(cancellationToken);
+        var metadataTypesResult = await MetadataTypeRepositoryReader.ListMetadataTypes(cancellationToken);
 
         return metadataTypesResult.Match(
             onValue: item => Ok(item.Select(x =>

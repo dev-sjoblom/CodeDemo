@@ -10,17 +10,17 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationListController : ClassificationBaseController
 {
-    private IClassificationRepository ClassificationRepository { get; }
+    private IClassificationRepositoryReader ClassificationRepositoryReader { get; }
 
-    public ClassificationListController(IClassificationRepository classificationRepository)
+    public ClassificationListController(IClassificationRepositoryReader classificationRepositoryReader)
     {
-        ClassificationRepository = classificationRepository;
+        ClassificationRepositoryReader = classificationRepositoryReader;
     }
 
     [HttpGet]
     public async Task<IActionResult> ListClassifications(CancellationToken cancellationToken)
     {
-        var classificationsResult = await ClassificationRepository.ListClassifications(cancellationToken);
+        var classificationsResult = await ClassificationRepositoryReader.ListClassifications(cancellationToken);
 
         return classificationsResult.Match(
             item => Ok(item.Select(x => x.ToClassificationResponse())),

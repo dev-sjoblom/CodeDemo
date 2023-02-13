@@ -1,3 +1,4 @@
+using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Receivers.Api;
@@ -9,17 +10,17 @@ namespace CommunicationService.Receivers.Api;
 [Route("[controller]")]
 public class ReceiverDeleteController : ReceiverBaseController
 {
-    private IReceiverRepository ReceiverRepository { get; }
+    private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
 
-    public ReceiverDeleteController(IReceiverRepository classificationRepository)
+    public ReceiverDeleteController(IReceiverRepositoryWriter classificationRepositoryWriter)
     {
-        ReceiverRepository = classificationRepository;
+        ReceiverRepositoryWriter = classificationRepositoryWriter;
     }
     
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteReceiver(Guid id, CancellationToken cancellationToken)
     {
-        var deleteResult = await ReceiverRepository.DeleteReceiver(id, cancellationToken);
+        var deleteResult = await ReceiverRepositoryWriter.DeleteReceiver(id, cancellationToken);
 
         return deleteResult.Match(
             _ => NoContent(),

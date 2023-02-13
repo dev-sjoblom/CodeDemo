@@ -12,17 +12,17 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationGetByIdController : ClassificationBaseController
 {
-    private IClassificationRepository ClassificationRepository { get; }
+    private IClassificationRepositoryReader ClassificationRepositoryReader { get; }
 
-    public ClassificationGetByIdController(IClassificationRepository classificationRepository)
+    public ClassificationGetByIdController(IClassificationRepositoryReader classificationRepositoryReader)
     {
-        ClassificationRepository = classificationRepository;
+        ClassificationRepositoryReader = classificationRepositoryReader;
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetClassificationById(Guid id, CancellationToken cancellationToken)
     {
-        var classificationResult = await ClassificationRepository.GetClassificationById(id, cancellationToken);
+        var classificationResult = await ClassificationRepositoryReader.GetClassificationById(id, cancellationToken);
 
         return classificationResult.Match(
             item => Ok(item.ToClassificationResponse()),

@@ -12,17 +12,17 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeGetByIdController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
 
-    public MetadataTypeGetByIdController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeGetByIdController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMetadataTypeById(Guid id, CancellationToken cancellationToken)
     {
-        var metadataTypeResult = await MetadataTypeRepository.GetMetadataTypeById(id, cancellationToken);
+        var metadataTypeResult = await MetadataTypeRepositoryReader.GetMetadataTypeById(id, cancellationToken);
 
         return metadataTypeResult.Match(
             item => Ok(item.ToMetadataTypeResponse()), 

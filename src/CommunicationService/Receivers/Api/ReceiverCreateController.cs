@@ -1,6 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
+using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
-using CommunicationService.Receivers.Fundamental;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -13,11 +13,11 @@ namespace CommunicationService.Receivers.Api;
 
 public class ReceiverCreateController : ReceiverBaseController
 {
-    private IReceiverRepository ReceiverRepository { get; }
+    private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
 
-    public ReceiverCreateController(IReceiverRepository classificationRepository)
+    public ReceiverCreateController(IReceiverRepositoryWriter classificationRepositoryWriter)
     {
-        ReceiverRepository = classificationRepository;
+        ReceiverRepositoryWriter = classificationRepositoryWriter;
     }
     
     [HttpPost]
@@ -28,7 +28,7 @@ public class ReceiverCreateController : ReceiverBaseController
             return Problem(receiverResult.Errors);
         var receiver = receiverResult.Value;
         
-        var createReceiverResult = await ReceiverRepository.CreateReceiver(
+        var createReceiverResult = await ReceiverRepositoryWriter.CreateReceiver(
             receiver, 
             request.Classifications,
             request.Metadata, 

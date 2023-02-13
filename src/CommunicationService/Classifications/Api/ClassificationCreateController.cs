@@ -11,11 +11,11 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationCreateController : ClassificationBaseController
 {
-    private IClassificationRepository ClassificationRepository { get; }
+    private IClassificationRepositoryWriter RepositoryWriter { get; }
 
-    public ClassificationCreateController(IClassificationRepository classificationRepository)
+    public ClassificationCreateController(IClassificationRepositoryWriter repositoryWriter)
     {
-        ClassificationRepository = classificationRepository;
+        RepositoryWriter = repositoryWriter;
     }
 
     [HttpPost]
@@ -27,7 +27,7 @@ public class ClassificationCreateController : ClassificationBaseController
             return Problem(toModelResult.Errors);
         var classificationItem = toModelResult.Value;
 
-        var createClassificationResult = await ClassificationRepository.CreateClassification(
+        var createClassificationResult = await RepositoryWriter.CreateClassification(
             classificationItem,
             request.MetadataTypes,
             cancellationToken);

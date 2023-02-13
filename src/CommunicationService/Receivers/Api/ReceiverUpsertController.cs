@@ -1,6 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
+using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
-using CommunicationService.Receivers.Fundamental;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -14,11 +14,11 @@ namespace CommunicationService.Receivers.Api;
 [Route("[controller]")]
 public class ReceiverUpsertController : ReceiverBaseController
 {
-    private IReceiverRepository ReceiverRepository { get; }
+    private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
 
-    public ReceiverUpsertController(IReceiverRepository classificationRepository)
+    public ReceiverUpsertController(IReceiverRepositoryWriter classificationRepositoryWriter)
     {
-        ReceiverRepository = classificationRepository;
+        ReceiverRepositoryWriter = classificationRepositoryWriter;
     }
     
     
@@ -33,7 +33,7 @@ public class ReceiverUpsertController : ReceiverBaseController
         }
 
         var receiver = receiverResult.Value;
-        var upsertedResult = await ReceiverRepository.UpsertReceiver(
+        var upsertedResult = await ReceiverRepositoryWriter.UpsertReceiver(
             receiver, 
             request.Classifications, 
             request.Metadata,
