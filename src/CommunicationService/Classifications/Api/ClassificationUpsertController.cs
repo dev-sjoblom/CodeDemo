@@ -14,11 +14,11 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationUpsertController : ClassificationBaseController
 {
-    private IClassificationRepository ClassificationRepository { get; }
+    private IClassificationRepositoryWriter RepositoryWriter { get; }
 
-    public ClassificationUpsertController(IClassificationRepository classificationRepository)
+    public ClassificationUpsertController(IClassificationRepositoryWriter repositoryWriter)
     {
-        ClassificationRepository = classificationRepository;
+        RepositoryWriter = repositoryWriter;
     }
 
     [HttpPut("{id:guid}")]
@@ -34,7 +34,7 @@ public class ClassificationUpsertController : ClassificationBaseController
         }
 
         var classification = classificationResult.Value;
-        var upsertedResult = await ClassificationRepository.UpsertClassification(
+        var upsertedResult = await RepositoryWriter.UpsertClassification(
             classification,
             request.MetadataTypes,
             cancellationToken);

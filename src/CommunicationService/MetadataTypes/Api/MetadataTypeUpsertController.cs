@@ -14,11 +14,11 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeUpsertController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
 
-    public MetadataTypeUpsertController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeUpsertController(IMetadataTypeRepositoryWriter repositoryWriter)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        RepositoryWriter = repositoryWriter;
     }
 
     [HttpPut("{id:guid}")]
@@ -32,7 +32,7 @@ public class MetadataTypeUpsertController : MetadataTypeBaseController
 
         var metadataType = requestToMetadataTypeResult.Value;
         var upsertedResult = await 
-            MetadataTypeRepository.UpsertMetadataType(metadataType, request.Classifications, cancellationToken);
+            RepositoryWriter.UpsertMetadataType(metadataType, request.Classifications, cancellationToken);
 
         return upsertedResult.Match(
             item => item.RegisteredAsNewItem ? CreatedAtMetadataType(metadataType) : NoContent(),

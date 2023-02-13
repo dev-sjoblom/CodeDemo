@@ -9,18 +9,18 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public  class ClassificationDeleteController : ClassificationBaseController
 {
-    private IClassificationRepository ClassificationRepository { get; }
+    private IClassificationRepositoryWriter RepositoryWriter { get; }
 
-    public ClassificationDeleteController(IClassificationRepository classificationRepository)
+    public ClassificationDeleteController(IClassificationRepositoryWriter repositoryWriter)
     {
-        ClassificationRepository = classificationRepository;
+        RepositoryWriter = repositoryWriter;
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteClassification(Guid id, CancellationToken cancellationToken)
     {
         var deleteResult = await
-            ClassificationRepository.DeleteClassification(id, cancellationToken);
+            RepositoryWriter.DeleteClassification(id, cancellationToken);
 
         return deleteResult.Match(_ => NoContent(), Problem);
     }

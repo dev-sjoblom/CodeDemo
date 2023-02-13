@@ -1,5 +1,5 @@
+using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
-using CommunicationService.Receivers.Fundamental;
 
 namespace CommunicationService.Receivers.Api;
 

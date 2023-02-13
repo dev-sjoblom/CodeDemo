@@ -1,6 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
+using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
-using CommunicationService.Receivers.Fundamental;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -12,18 +12,18 @@ namespace CommunicationService.Receivers.Api;
 [Route("[controller]")]
 public class ReceiverGetByIdController : ReceiverBaseController
 {
-    private IReceiverRepository ReceiverRepository { get; }
+    private IReceiverRepositoryReader Read { get; }
 
-    public ReceiverGetByIdController(IReceiverRepository classificationRepository)
+    public ReceiverGetByIdController(IReceiverRepositoryReader read)
     {
-        ReceiverRepository = classificationRepository;
+        Read = read;
     }
     
     
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetReceiverById(Guid id, CancellationToken cancellationToken)
     {
-        var classificationResult = await ReceiverRepository.GetReceiverById(id, cancellationToken);
+        var classificationResult = await Read.GetReceiverById(id, cancellationToken);
 
         return classificationResult.Match(
             item => Ok(item.ToReceiverResponse()),

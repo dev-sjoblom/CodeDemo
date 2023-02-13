@@ -9,18 +9,18 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeDeleteController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
 
-    public MetadataTypeDeleteController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeDeleteController(IMetadataTypeRepositoryWriter repositoryWriter)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        RepositoryWriter = repositoryWriter;
     }
 
     
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteBreakfast(Guid id, CancellationToken cancellationToken)
     {
-        var deleteResult = await MetadataTypeRepository.DeleteMetadataType(id, cancellationToken);
+        var deleteResult = await RepositoryWriter.DeleteMetadataType(id, cancellationToken);
     
         return deleteResult.Match(_ => NoContent(), Problem);
     }

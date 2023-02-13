@@ -8,18 +8,18 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeGetByNameController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepository MetadataTypeRepository { get; }
+    private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
 
-    public MetadataTypeGetByNameController(IMetadataTypeRepository metadataTypeRepository)
+    public MetadataTypeGetByNameController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
     {
-        MetadataTypeRepository = metadataTypeRepository;
+        MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
     }
 
     
     [HttpGet("{name}")]
     public async Task<IActionResult> GetMetadataTypeByName(string name, CancellationToken cancellationToken)
     {
-        var metadataTypeResult = await MetadataTypeRepository.GetMetadataTypeByName(name, cancellationToken);
+        var metadataTypeResult = await MetadataTypeRepositoryReader.GetMetadataTypeByName(name, cancellationToken);
 
         return metadataTypeResult.Match(
             item => Ok(item.ToMetadataTypeResponse()),

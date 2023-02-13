@@ -1,6 +1,6 @@
 using CommunicationService.Receivers.Data;
 
-namespace CommunicationService.Receivers.Fundamental;
+namespace CommunicationService.Receivers.Core;
 
 public static class ReceiverErrors
 {

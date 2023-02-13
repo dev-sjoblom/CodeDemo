@@ -6,44 +6,15 @@ using static CommunicationService.MetadataTypes.Fundamental.MetadataTypeErrors;
 
 namespace CommunicationService.MetadataTypes.Data;
 
-public class MetadataTypeRepository : IMetadataTypeRepository
+public class MetadataTypeRepositoryReader : IMetadataTypeRepositoryReader
 {
     private const string ixMetadataTypeName = "IX_MetadataType_Name";
 
     private CommunicationDbContext DbContext { get; }
 
-    public MetadataTypeRepository(CommunicationDbContext dbContext)
+    public MetadataTypeRepositoryReader(CommunicationDbContext dbContext)
     {
         DbContext = dbContext;
-    }
-
-    public async Task<ErrorOr<Created>> CreateMetadataType(MetadataType metadataType, string[] classifications, CancellationToken cancellationToken)
-    {
-        DbContext.MetadataType.Add(metadataType);
-
-        foreach (var name in classifications)
-        {
-            if (await DbContext.Classification.Where(x => x.Name == name).FirstOrDefaultAsync(cancellationToken: cancellationToken) is not Classification classification)
-                return ClassificationErrors.NotFound;
-            
-            metadataType.Classifications.Add(classification);
-        }
-
-        try
-        {
-            await DbContext.SaveChangesAsync(cancellationToken);
-            return Result.Created;
-        }
-        catch (DbUpdateException updateException) when (updateException.InnerException is PostgresException)
-        {
-            var message = updateException.InnerException.Message;
-            if (message.Contains(ixMetadataTypeName))
-            {
-                return NameAlreadyExists;
-            }
-
-            throw;
-        }
     }
     
     public async Task<ErrorOr<Deleted>> DeleteMetadataType(Guid id, CancellationToken cancellationToken)

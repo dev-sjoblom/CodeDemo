@@ -23,9 +23,10 @@ public partial class ClassificationTests
 
         // act
         var response = await client.DeleteAsync(url);
+        var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent, stringContent);
 
         var removedClassification = dbContext.Classification.FirstOrDefault(x => x.Id == classification.Id);
         removedClassification.Should().BeNull();

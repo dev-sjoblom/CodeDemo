@@ -1,7 +1,7 @@
 using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Data;
 
-namespace CommunicationService.Receivers.Fundamental;
+namespace CommunicationService.Receivers.Core;
 
 public static class ReceiverConverter
 {
