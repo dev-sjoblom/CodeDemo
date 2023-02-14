@@ -13,7 +13,7 @@ public class ReceiverRepositoryReader : IReceiverRepositoryReader
     private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
     private const string ixReceiverName = "IX_Receiver_UniqueName";
 
-    public ReceiverRepositoryReader(CommunicationDbContext dbContext, 
+    public ReceiverRepositoryReader(CommunicationDbContext dbContext,
         IClassificationRepositoryReader classificationRepositoryReader,
         IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
     {
@@ -45,7 +45,7 @@ public class ReceiverRepositoryReader : IReceiverRepositoryReader
             .ThenInclude(x => x.MetadataType)
             .Where(x => x.UniqueName == uniqueName)
             .FirstOrDefaultAsync(cancellationToken);
-        
+
         if (await task is not Receiver classification)
             return NotFound;
 

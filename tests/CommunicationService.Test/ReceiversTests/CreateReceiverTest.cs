@@ -1,3 +1,4 @@
+using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.ReceiversTests.ContractModels;
 using CommunicationService.Test.ReceiversTests.Helpers;
 
@@ -12,7 +13,10 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewReceiverUrl() => $"/ReceiverCreate";
+    private string CreateNewReceiverUrl()
+    {
+        return $"/ReceiverCreate";
+    }
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
@@ -30,7 +34,8 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
         dbContext.AddMetadataTypeWithClassification(metadataTypeName, classifications);
         await dbContext.SaveChangesAsync();
-        
+
+
         var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateReceiverRequest()
         {
@@ -58,16 +63,24 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
     }
 
     [Theory]
-    [InlineAutoMoq("a")]
-    public async Task CreateNewReceiver_WithIncorrectName_ReturnsBadRequest(string uniqueName)
+    [InlineAutoMoq("a", ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    [InlineAutoMoq("aa", ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task CreateNewReceiver_WithToShortName_ReturnsBadRequest(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
+        await dbContext.SaveChangesAsync();
+
         var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateReceiverRequest()
         {
-            UniqueName = uniqueName
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = new[] { classificationName },
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
         }.AsJsonStringContent();
 
         // Act
@@ -78,7 +91,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
     }
 
     [Theory]
-    [InlineAutoMoq( ValidReceiverName, ValidReceiverEmail)]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail)]
     public async Task CreateNewReceiver_WithNonExistingClassification_ReturnsNotFound(
         string uniqueName, string email,
         string classificationName)
@@ -100,5 +113,34 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task CreateNewReceiver_WithInvalidClassificationMetadataCombination_FailedDependency(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataType(metadataTypeName);
+        dbContext.AddClassification(classificationName);
+        await dbContext.SaveChangesAsync();
+
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new CreateReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = new[] { classificationName },
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PostAsync(CreateNewReceiverUrl(), body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
     }
 }

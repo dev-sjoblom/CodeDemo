@@ -104,6 +104,9 @@ public class ReceiverRepositoryWriter : IReceiverRepositoryWriter
             if (metadataType.IsError)
                 return metadataType.Errors;
 
+            if (!metadataType.Value.Classifications.Any(x => receiver.Classifications.Any(p => x.Id == p.Id)))
+                return MetadataTypeNotAllowed;
+
             var metadata = new ReceiverMetadata()
             {
                 MetadataType = metadataType.Value,

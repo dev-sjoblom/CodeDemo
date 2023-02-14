@@ -8,7 +8,10 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string UpsertReceiverUrl(Guid id) => $"/ReceiverUpsert/{id}";
+    private string UpsertReceiverUrl(Guid id)
+    {
+        return $"/ReceiverUpsert/{id}";
+    }
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
@@ -29,10 +32,10 @@ public partial class ReceiverTest
 
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequest(
-            UniqueName: uniqueName,
-            Email: email,
-            Classifications: classifications,
-            Metadata: new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+            uniqueName,
+            email,
+            classifications,
+            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
         ).AsJsonStringContent();
 
         // act
@@ -77,10 +80,10 @@ public partial class ReceiverTest
 
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequest(
-            UniqueName: uniqueName,
-            Email: email,
-            Classifications: classifications,
-            Metadata: new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+            uniqueName,
+            email,
+            classifications,
+            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
         ).AsJsonStringContent();
 
         // act
@@ -101,7 +104,8 @@ public partial class ReceiverTest
 
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName)]
-    public async Task UpsertReceiver_UpdateWithBusyName_ShouldReturnConflict(string receiverName, string receiverEmail, string classificationName)
+    public async Task UpsertReceiver_UpdateWithBusyName_ShouldReturnConflict(string receiverName, string receiverEmail,
+        string classificationName)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -109,24 +113,85 @@ public partial class ReceiverTest
         //var classification = dbContext.AddClassification(classificationName);
         dbContext.AddReceiverWithClassifications(receiverName, receiverEmail, new[] { classificationName });
         var receiver =
-            dbContext.AddReceiverWithClassifications($"{receiverName}A", $"{receiverEmail}A", new[] { $"{classificationName}A" });
+            dbContext.AddReceiverWithClassifications($"{receiverName}A", $"{receiverEmail}A",
+                new[] { $"{classificationName}A" });
 
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
         var url = UpsertReceiverUrl(Guid.NewGuid());
         var body = new UpsertReceiverRequest(
-                UniqueName: receiver.UniqueName,
-                Email: receiverEmail,
-                Classifications: new[] { classificationName },
-                Metadata: Array.Empty<KeyValuePair<string, string>>())
+                receiver.UniqueName,
+                receiverEmail,
+                new[] { classificationName },
+                Array.Empty<KeyValuePair<string, string>>())
             .AsJsonStringContent();
-        
+
         // act
         var response = await client.PutAsync(url, body);
         var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict, stringContent);
+    }
+
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task UpsertReceiver_CreateNewWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataType(metadataTypeName);
+        dbContext.AddClassification(classificationName);
+        await dbContext.SaveChangesAsync();
+
+        var url = UpsertReceiverUrl(Guid.NewGuid());
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new CreateReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = new[] { classificationName },
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PutAsync(url, body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+    }
+    
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task UpsertReceiver_UpdateReceiverWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataType(metadataTypeName);
+        dbContext.AddReceiverWithClassifications(uniqueName, email, new[] { classificationName });
+        await dbContext.SaveChangesAsync();
+
+        var url = UpsertReceiverUrl(Guid.NewGuid());
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new CreateReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = new[] { classificationName },
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PutAsync(url, body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
     }
 }
