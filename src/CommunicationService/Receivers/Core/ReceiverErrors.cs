@@ -1,4 +1,3 @@
-using System.Net;
 using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Receivers.Core;

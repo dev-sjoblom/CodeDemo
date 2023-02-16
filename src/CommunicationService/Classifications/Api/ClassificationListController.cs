@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.Api.Model;
+using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
-using CommunicationService.Classifications.Fundamental;
 
 namespace CommunicationService.Classifications.Api;
 
@@ -12,7 +12,7 @@ public class ClassificationListController : ClassificationBaseController
 {
     private IClassificationRepositoryReader ClassificationRepositoryReader { get; }
 
-    public ClassificationListController(IClassificationRepositoryReader classificationRepositoryReader)
+    public ClassificationListController(IClassificationRepositoryReader classificationRepositoryReader, ILogger<ClassificationListController> logger) : base(logger)
     {
         ClassificationRepositoryReader = classificationRepositoryReader;
     }

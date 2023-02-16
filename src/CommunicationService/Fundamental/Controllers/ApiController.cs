@@ -1,12 +1,18 @@
-using System.Net;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace CommunicationService.Fundamental;
+namespace CommunicationService.Fundamental.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ApiController : ControllerBase
+public abstract class ApiController : ControllerBase
 {
+    protected ILogger Logger { get; }
+
+    public ApiController(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.All(e => e.Type == ErrorType.Validation))
@@ -30,6 +36,8 @@ public class ApiController : ControllerBase
             { NumericType: StatusCodes.Status424FailedDependency } => StatusCodes.Status424FailedDependency,
             _ => StatusCodes.Status500InternalServerError
         };
+        
+        Logger.LogInformation("Managed error occurred with status code {StatusCode} in request:{@Error}", statusCode, errors);
 
         return Problem(statusCode: statusCode, title: firstError.Description);
     }

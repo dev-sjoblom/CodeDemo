@@ -7,6 +7,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationService", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationService.Test", "tests\CommunicationService.Test\CommunicationService.Test.csproj", "{45B4E5E4-8AD1-4895-9268-3156115519A8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stuff", "Stuff", "{0F5C9F3D-737F-47FC-97A5-CDDDD713C739}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CommunicationService.sln = CommunicationService.sln
+		CommunicationService.sln.DotSettings = CommunicationService.sln.DotSettings
+		Directory.Build.props = Directory.Build.props
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

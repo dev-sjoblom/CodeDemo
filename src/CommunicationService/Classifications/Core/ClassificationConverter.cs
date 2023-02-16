@@ -1,7 +1,7 @@
 using CommunicationService.Classifications.Api.Model;
 using CommunicationService.Classifications.Data;
 
-namespace CommunicationService.Classifications.Fundamental;
+namespace CommunicationService.Classifications.Core;
 
 public static class ClassificationConverter
 {

@@ -1,5 +1,4 @@
 using CommunicationService.Receivers.Core;
-using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -12,7 +11,7 @@ public class ReceiverDeleteController : ReceiverBaseController
 {
     private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
 
-    public ReceiverDeleteController(IReceiverRepositoryWriter classificationRepositoryWriter)
+    public ReceiverDeleteController(IReceiverRepositoryWriter classificationRepositoryWriter, ILogger<ReceiverDeleteController> logger) : base(logger)
     {
         ReceiverRepositoryWriter = classificationRepositoryWriter;
     }

@@ -19,7 +19,7 @@ Version: Draft 1 (Work in progress)
 - Test Driven Development (TDD): Testing input & output to service, admin access required.
 - Error/Result: Return error instead of throwing
 - Crud rest api
-- Repository Pattern
+- Repository Pattern    
 - WarningAsError
 - Nullible
 - Clean Code'ish: Refactoring needed
@@ -31,6 +31,7 @@ Version: Draft 1 (Work in progress)
 - [Entity Framework Core](https://github.com/dotnet/efcore) - 
 - [Npgsql Entity Framework](https://github.com/npgsql/efcore.pg) - Npgsql Entity Framework Core provider for PostgreSQL
 - [ErrorOr](URLhttps://github.com/amantinband/error-or)
+- [Serilog](https://github.com/serilog/serilog)
 
 ## Testing
 - [xUnit.net](https://github.com/xunit/xunit) - testing tool
@@ -45,6 +46,8 @@ Version: Draft 1 (Work in progress)
 - Reactoring: Hide boilerplate code
 - Validation 
 - Null Guards
+- Secrets
+- OpenTelemetry
 
 # Maybe
 - [Marten - postgre as document db / event sourcing](https://github.com/JasperFx/marten)

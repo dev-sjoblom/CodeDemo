@@ -1,4 +1,7 @@
-namespace CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Core.Model;
+using CommunicationService.Classifications.Data;
+
+namespace CommunicationService.Classifications.Core;
 
 public interface IClassificationRepositoryWriter
 {

@@ -1,6 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
-using CommunicationService.MetadataTypes.Fundamental;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -12,7 +12,7 @@ public class MetadataTypeListController : MetadataTypeBaseController
 {
     private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
 
-    public MetadataTypeListController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
+    public MetadataTypeListController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader, ILogger<MetadataTypeListController> logger) : base(logger)
     {
         MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
     }

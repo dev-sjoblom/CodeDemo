@@ -1,6 +1,6 @@
-using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.MetadataTypes.Data;
 
-namespace CommunicationService.MetadataTypes.Data;
+namespace CommunicationService.MetadataTypes.Core;
 
 public interface IMetadataTypeRepositoryReader
 {

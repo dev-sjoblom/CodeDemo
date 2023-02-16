@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.Api.Model;
+using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
-using CommunicationService.Classifications.Fundamental;
 
 namespace CommunicationService.Classifications.Api;
 
@@ -16,7 +16,7 @@ public class ClassificationUpsertController : ClassificationBaseController
 {
     private IClassificationRepositoryWriter RepositoryWriter { get; }
 
-    public ClassificationUpsertController(IClassificationRepositoryWriter repositoryWriter)
+    public ClassificationUpsertController(IClassificationRepositoryWriter repositoryWriter, ILogger<ClassificationUpsertController> logger) : base(logger)
     {
         RepositoryWriter = repositoryWriter;
     }

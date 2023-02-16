@@ -1,6 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
-using CommunicationService.MetadataTypes.Fundamental;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -14,7 +14,7 @@ public class MetadataTypeCreateController : MetadataTypeBaseController
 {
     private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
 
-    public MetadataTypeCreateController(IMetadataTypeRepositoryWriter repositoryWriter)
+    public MetadataTypeCreateController(IMetadataTypeRepositoryWriter repositoryWriter, ILogger<IMetadataTypeRepositoryWriter> logger) : base(logger)
     {
         RepositoryWriter = repositoryWriter;
     }

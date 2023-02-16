@@ -1,7 +1,7 @@
 using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.MetadataTypes.Data;
 
-namespace CommunicationService.MetadataTypes.Fundamental;
+namespace CommunicationService.MetadataTypes.Core;
 
 public static class MetadataTypeConverter
 {
