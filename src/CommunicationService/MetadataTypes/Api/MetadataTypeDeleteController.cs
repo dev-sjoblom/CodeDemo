@@ -1,3 +1,4 @@
+using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
 
 namespace CommunicationService.MetadataTypes.Api;
@@ -11,7 +12,7 @@ public class MetadataTypeDeleteController : MetadataTypeBaseController
 {
     private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
 
-    public MetadataTypeDeleteController(IMetadataTypeRepositoryWriter repositoryWriter)
+    public MetadataTypeDeleteController(IMetadataTypeRepositoryWriter repositoryWriter, ILogger<MetadataTypeDeleteController> logger) : base(logger)
     {
         RepositoryWriter = repositoryWriter;
     }

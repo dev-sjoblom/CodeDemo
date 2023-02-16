@@ -1,4 +1,4 @@
-namespace CommunicationService.Fundamental;
+namespace CommunicationService.Fundamental.Controllers;
 
 public class ErrorsController : ControllerBase
 {

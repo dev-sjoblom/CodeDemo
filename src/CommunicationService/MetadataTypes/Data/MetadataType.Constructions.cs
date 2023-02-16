@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.Data;
 using static System.Char;
-using static CommunicationService.MetadataTypes.Fundamental.MetadataTypeErrors;
+using static CommunicationService.MetadataTypes.Core.MetadataTypeErrors;
 
 namespace CommunicationService.MetadataTypes.Data;
 

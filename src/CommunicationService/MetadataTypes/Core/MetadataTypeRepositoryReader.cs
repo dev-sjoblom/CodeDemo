@@ -1,10 +1,11 @@
+using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
-using CommunicationService.Classifications.Fundamental;
 using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.MetadataTypes.Data;
 using Npgsql;
-using static CommunicationService.MetadataTypes.Fundamental.MetadataTypeErrors;
+using static CommunicationService.MetadataTypes.Core.MetadataTypeErrors;
 
-namespace CommunicationService.MetadataTypes.Data;
+namespace CommunicationService.MetadataTypes.Core;
 
 public class MetadataTypeRepositoryReader : IMetadataTypeRepositoryReader
 {

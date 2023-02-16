@@ -1,3 +1,4 @@
+using CommunicationService.Fundamental.Controllers;
 using CommunicationService.Receivers.Core;
 using CommunicationService.Receivers.Data;
 
@@ -7,7 +8,11 @@ public class ReceiverBaseController : ApiController
 {
     private const string _receiverGetByIdController = "ReceiverGetById";
     private const string _receiverGetByIdAction = "GetReceiverById";
-    
+
+    public ReceiverBaseController(ILogger logger) : base(logger)
+    {
+        
+    }
     protected CreatedAtActionResult CreatedAtReceiver(Receiver receiver)
     {
         return CreatedAtAction(

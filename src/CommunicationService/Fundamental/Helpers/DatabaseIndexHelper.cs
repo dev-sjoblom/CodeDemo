@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace CommunicationService.Fundamental;
+namespace CommunicationService.Fundamental.Helpers;
 
 public static class DatabaseIndexHelper
 {

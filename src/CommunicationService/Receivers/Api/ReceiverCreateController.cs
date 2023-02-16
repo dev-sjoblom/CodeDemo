@@ -1,6 +1,5 @@
 using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Core;
-using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -15,7 +14,7 @@ public class ReceiverCreateController : ReceiverBaseController
 {
     private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
 
-    public ReceiverCreateController(IReceiverRepositoryWriter classificationRepositoryWriter)
+    public ReceiverCreateController(IReceiverRepositoryWriter classificationRepositoryWriter, ILogger<ReceiverCreateController> logger) : base(logger)
     {
         ReceiverRepositoryWriter = classificationRepositoryWriter;
     }

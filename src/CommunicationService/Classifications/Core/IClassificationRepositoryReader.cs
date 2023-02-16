@@ -1,4 +1,6 @@
-namespace CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Data;
+
+namespace CommunicationService.Classifications.Core;
 
 public interface IClassificationRepositoryReader
 {

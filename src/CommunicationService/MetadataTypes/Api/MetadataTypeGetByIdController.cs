@@ -1,6 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
-using CommunicationService.MetadataTypes.Fundamental;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -14,7 +14,7 @@ public class MetadataTypeGetByIdController : MetadataTypeBaseController
 {
     private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
 
-    public MetadataTypeGetByIdController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader)
+    public MetadataTypeGetByIdController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader, ILogger<MetadataTypeGetByIdController> logger) : base(logger)
     {
         MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
     }

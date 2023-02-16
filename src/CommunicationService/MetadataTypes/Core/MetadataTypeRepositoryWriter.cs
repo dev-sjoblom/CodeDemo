@@ -1,11 +1,10 @@
-using CommunicationService.Classifications.Data;
-using CommunicationService.Classifications.Fundamental;
+using CommunicationService.Classifications.Core;
+using CommunicationService.Fundamental.Helpers;
 using CommunicationService.MetadataTypes.Api.Model;
-using CommunicationService.MetadataTypes.Fundamental;
-using Npgsql;
-using static CommunicationService.MetadataTypes.Fundamental.MetadataTypeErrors;
+using CommunicationService.MetadataTypes.Data;
+using static CommunicationService.MetadataTypes.Core.MetadataTypeErrors;
 
-namespace CommunicationService.MetadataTypes.Data;
+namespace CommunicationService.MetadataTypes.Core;
 
 public class MetadataTypeRepositoryWriter : IMetadataTypeRepositoryWriter
 {

@@ -1,3 +1,4 @@
+using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
 
 namespace CommunicationService.Classifications.Api;
@@ -11,7 +12,7 @@ public  class ClassificationDeleteController : ClassificationBaseController
 {
     private IClassificationRepositoryWriter RepositoryWriter { get; }
 
-    public ClassificationDeleteController(IClassificationRepositoryWriter repositoryWriter)
+    public ClassificationDeleteController(IClassificationRepositoryWriter repositoryWriter, ILogger<ClassificationDeleteController> logger) : base(logger)
     {
         RepositoryWriter = repositoryWriter;
     }

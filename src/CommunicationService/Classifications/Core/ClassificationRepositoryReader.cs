@@ -1,8 +1,8 @@
-using CommunicationService.MetadataTypes.Data;
-using Npgsql;
-using static CommunicationService.Classifications.Fundamental.ClassificationErrors;
+using CommunicationService.Classifications.Data;
+using CommunicationService.MetadataTypes.Core;
+using static CommunicationService.Classifications.Core.ClassificationErrors;
 
-namespace CommunicationService.Classifications.Data;
+namespace CommunicationService.Classifications.Core;
 
 public class ClassificationRepositoryReader : IClassificationRepositoryReader
 {

@@ -1,6 +1,5 @@
 using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Core;
-using CommunicationService.Receivers.Data;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -12,7 +11,7 @@ public class ReceiverListController : ReceiverBaseController
 {
     private IReceiverRepositoryReader Read { get; }
 
-    public ReceiverListController(IReceiverRepositoryReader read)
+    public ReceiverListController(IReceiverRepositoryReader read, ILogger<ReceiverListController> logger) : base(logger)
     {
         Read = read;
     }
