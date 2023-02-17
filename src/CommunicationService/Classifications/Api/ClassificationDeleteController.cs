@@ -1,5 +1,5 @@
-using CommunicationService.Classifications.Core;
-using CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Commands;
+using MediatR;
 
 namespace CommunicationService.Classifications.Api;
 
@@ -8,21 +8,24 @@ namespace CommunicationService.Classifications.Api;
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [Route("[controller]")]
-public  class ClassificationDeleteController : ClassificationBaseController
+public class ClassificationDeleteController : ClassificationBaseController
 {
-    private IClassificationRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public ClassificationDeleteController(IClassificationRepositoryWriter repositoryWriter, ILogger<ClassificationDeleteController> logger) : base(logger)
+    public ClassificationDeleteController(
+        ILogger<ClassificationDeleteController> logger,
+        IMediator mediator) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteClassification(Guid id, CancellationToken cancellationToken)
     {
-        var deleteResult = await
-            RepositoryWriter.DeleteClassification(id, cancellationToken);
+        var result = await Mediator.Send(
+            new DeleteClassificationCommand() { Id = id },
+            cancellationToken);
 
-        return deleteResult.Match(_ => NoContent(), Problem);
+        return result.Match(_ => NoContent(), Problem);
     }
 }

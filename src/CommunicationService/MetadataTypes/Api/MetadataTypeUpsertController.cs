@@ -1,6 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
-using CommunicationService.MetadataTypes.Core;
-using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.Commands;
+using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -14,28 +14,29 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeUpsertController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public MetadataTypeUpsertController(IMetadataTypeRepositoryWriter repositoryWriter, ILogger<MetadataTypeUpsertController> logger) : base(logger)
+    public MetadataTypeUpsertController(
+        ILogger<MetadataTypeUpsertController> logger,
+        IMediator mediator) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpsertMetadataType(Guid id, UpsertMetadataTypeRequest request,
         CancellationToken cancellationToken)
     {
-        var requestToMetadataTypeResult = request.ToMetadataType(id);
+        var result = await Mediator.Send(
+            new UpsertMetadataTypeCommand()
+            {
+                Id = id,
+                Classifications = request.Classifications,
+                Name = request.Name
+            }, cancellationToken);
 
-        if (requestToMetadataTypeResult.IsError) 
-            return Problem(requestToMetadataTypeResult.Errors);
-
-        var metadataType = requestToMetadataTypeResult.Value;
-        var upsertedResult = await 
-            RepositoryWriter.UpsertMetadataType(metadataType, request.Classifications, cancellationToken);
-
-        return upsertedResult.Match(
-            item => item.RegisteredAsNewItem ? CreatedAtMetadataType(metadataType) : NoContent(),
+        return result.Match(
+            item => item.RegisteredAsNewItem ? CreatedAtMetadataType(item.MetadataType) : NoContent(),
             Problem);
     }
 }

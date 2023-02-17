@@ -1,5 +1,5 @@
-using CommunicationService.Test.ReceiversTests.ContractModels;
 using CommunicationService.Test.ReceiversTests.Helpers;
+using CommunicationService.Test.ReceiversTests.Model;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ReceiversTests;

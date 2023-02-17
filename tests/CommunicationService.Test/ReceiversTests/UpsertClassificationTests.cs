@@ -1,6 +1,6 @@
 using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.ReceiversTests.ContractModels;
 using CommunicationService.Test.ReceiversTests.Helpers;
+using CommunicationService.Test.ReceiversTests.Model;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 

@@ -9,15 +9,10 @@ public static class DatabaseHelper
         context.SaveChanges();
     }
 
-    public static void RemoveDatabase(string connectionString)
-    {
-        using var context = CreateDbContext(connectionString);
-        context.Database.EnsureDeleted();
-        context.SaveChanges();
-    }
-
     public static CommunicationDbContext CreateDbContext(string connectionString)
-        => new(new DbContextOptionsBuilder<CommunicationDbContext>()
-                .UseNpgsql(connectionString)
-                .Options);
+    {
+        return new(new DbContextOptionsBuilder<CommunicationDbContext>()
+            .UseNpgsql(connectionString)
+            .Options);
+    }
 }

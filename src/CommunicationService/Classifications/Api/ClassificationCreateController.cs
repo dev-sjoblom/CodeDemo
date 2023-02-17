@@ -1,8 +1,9 @@
 using CommunicationService.Classifications.Api.Model;
-using CommunicationService.Classifications.Core;
-using CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Commands;
+using MediatR;
 
 namespace CommunicationService.Classifications.Api;
+
 [ApiController]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ClassificationResponse), StatusCodes.Status201Created)]
@@ -11,29 +12,27 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationCreateController : ClassificationBaseController
 {
-    private IClassificationRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public ClassificationCreateController(IClassificationRepositoryWriter repositoryWriter, ILogger<ClassificationCreateController> logger) : base(logger)
+    public ClassificationCreateController(
+        ILogger<ClassificationCreateController> logger,
+        IMediator mediator) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateClassification(CreateClassificationRequest request,
         CancellationToken cancellationToken)
     {
-        var toModelResult = request.ToClassification();
-        if (toModelResult.IsError)
-            return Problem(toModelResult.Errors);
-        var classificationItem = toModelResult.Value;
+        var result = await Mediator.Send(new CreateClassificationCommand()
+        {
+            Name = request.Name,
+            MetadataTypes = request.MetadataTypes
+        }, cancellationToken);
 
-        var createClassificationResult = await RepositoryWriter.CreateClassification(
-            classificationItem,
-            request.MetadataTypes,
-            cancellationToken);
-
-        return createClassificationResult.Match(
-            _ => CreatedAtClassification(classificationItem),
+        return result.Match(
+            CreatedAtClassification,
             Problem);
     }
 }

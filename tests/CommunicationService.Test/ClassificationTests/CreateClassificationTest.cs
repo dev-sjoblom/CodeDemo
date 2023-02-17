@@ -1,4 +1,5 @@
 using CommunicationService.Test.ClassificationTests.Helpers;
+using CommunicationService.Test.ClassificationTests.Model;
 
 namespace CommunicationService.Test.ClassificationTests;
 

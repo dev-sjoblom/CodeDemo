@@ -1,5 +1,5 @@
-using CommunicationService.MetadataTypes.Core;
-using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.Commands;
+using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -10,19 +10,22 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeDeleteController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public MetadataTypeDeleteController(IMetadataTypeRepositoryWriter repositoryWriter, ILogger<MetadataTypeDeleteController> logger) : base(logger)
+    public MetadataTypeDeleteController(
+        ILogger<MetadataTypeDeleteController> logger,
+        IMediator mediator) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
 
-    
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteBreakfast(Guid id, CancellationToken cancellationToken)
     {
-        var deleteResult = await RepositoryWriter.DeleteMetadataType(id, cancellationToken);
-    
-        return deleteResult.Match(_ => NoContent(), Problem);
+        var result = await Mediator.Send(new DeleteMetadataTypeCommand() { Id = id },
+            cancellationToken);
+
+        return result.Match(_ => NoContent(), Problem);
     }
 }

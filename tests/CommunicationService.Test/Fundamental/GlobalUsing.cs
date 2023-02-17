@@ -1,0 +1,10 @@
+global using static CommunicationService.Test.ClassificationTests.Helpers.ClassificationConstants;
+global using static CommunicationService.Test.MetadataTypeTests.Helpers.MetadataTypeConstants;
+global using static CommunicationService.Test.MetadataTypeTests.Helpers.MetadataTypeDbContextHelper;
+global using static CommunicationService.Test.ClassificationTests.Helpers.ClassificationEntityCreator;
+global using static CommunicationService.Test.ReceiversTests.Helpers.ReceiversConstants;
+global using CommunicationService.Test.Fundamental;
+global using Xunit;
+global using System.Net;
+global using FluentAssertions;
+global using CommunicationService.Fundamental;

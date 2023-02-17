@@ -1,5 +1,5 @@
 using CommunicationService.MetadataTypes.Data;
-using static CommunicationService.Classifications.Core.ClassificationErrors;
+using static CommunicationService.Classifications.Commands.ClassificationCommandErrors;
 
 namespace CommunicationService.Classifications.Data;
 

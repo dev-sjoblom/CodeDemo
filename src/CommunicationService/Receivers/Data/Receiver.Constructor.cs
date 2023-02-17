@@ -1,5 +1,5 @@
 using CommunicationService.Classifications.Data;
-using static CommunicationService.Receivers.Core.ReceiverErrors;
+using static CommunicationService.Receivers.Commands.ReceiverCommandErrors;
 
 namespace CommunicationService.Receivers.Data;
 

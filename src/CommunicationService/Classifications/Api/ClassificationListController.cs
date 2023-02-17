@@ -1,6 +1,7 @@
 using CommunicationService.Classifications.Api.Model;
-using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Queries;
+using MediatR;
 
 namespace CommunicationService.Classifications.Api;
 
@@ -10,19 +11,20 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationListController : ClassificationBaseController
 {
-    private IClassificationRepositoryReader ClassificationRepositoryReader { get; }
+    private IMediator Mediator { get; }
 
-    public ClassificationListController(IClassificationRepositoryReader classificationRepositoryReader, ILogger<ClassificationListController> logger) : base(logger)
+    public ClassificationListController(
+        ILogger<ClassificationListController> logger, 
+        IMediator mediator) : base(logger)
     {
-        ClassificationRepositoryReader = classificationRepositoryReader;
+        Mediator = mediator;
     }
-
+    
     [HttpGet]
-    public async Task<IActionResult> ListClassifications(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetClassificationItems()
     {
-        var classificationsResult = await ClassificationRepositoryReader.ListClassifications(cancellationToken);
-
-        return classificationsResult.Match(
+        var result = await Mediator.Send(new GetClassificationsQuery());
+        return result.Match(
             item => Ok(item.Select(x => x.ToClassificationResponse())),
             Problem);
     }

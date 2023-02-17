@@ -1,5 +1,6 @@
-using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.Queries;
+using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -8,22 +9,24 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeGetByNameController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepositoryReader MetadataTypeRepositoryReader { get; }
+    private IMediator Mediator { get; }
 
-    public MetadataTypeGetByNameController(IMetadataTypeRepositoryReader metadataTypeRepositoryReader, ILogger<MetadataTypeGetByNameController> logger) : base(logger)
+    public MetadataTypeGetByNameController(
+        ILogger<MetadataTypeGetByNameController> logger,
+        IMediator mediator) : base(logger)
     {
-        MetadataTypeRepositoryReader = metadataTypeRepositoryReader;
+        Mediator = mediator;
     }
 
-    
+
     [HttpGet("{name}")]
     public async Task<IActionResult> GetMetadataTypeByName(string name, CancellationToken cancellationToken)
     {
-        var metadataTypeResult = await MetadataTypeRepositoryReader.GetMetadataTypeByName(name, cancellationToken);
+        var result =
+            await Mediator.Send(new GetMetadataTypeByNameQuery() { Name = name }, cancellationToken);
 
-        return metadataTypeResult.Match(
+        return result.Match(
             item => Ok(item.ToMetadataTypeResponse()),
             Problem);
     }
-
 }
