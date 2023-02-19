@@ -15,6 +15,8 @@ public class GetMetadataTypesHandler : IRequestHandler<GetMetadataTypesQuery, Er
     public async Task<ErrorOr<IEnumerable<MetadataType>>> Handle(GetMetadataTypesQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var metadataType = await DbContext.MetadataType
             .Include(x => x.Classifications)
             .ToListAsync(cancellationToken);

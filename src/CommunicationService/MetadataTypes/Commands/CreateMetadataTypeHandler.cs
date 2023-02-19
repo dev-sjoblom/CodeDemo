@@ -23,6 +23,11 @@ public class CreateMetadataTypeHandler : IRequestHandler<CreateMetadataTypeComma
     public async Task<ErrorOr<MetadataType>> Handle(CreateMetadataTypeCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+        ArgumentNullException.ThrowIfNull(request.Classifications);
+
+
         var existingResult = await Mediator.Send(
             new GetMetadataTypeByNameQuery() { Name = request.Name },
             cancellationToken);

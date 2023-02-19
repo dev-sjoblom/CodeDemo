@@ -23,6 +23,10 @@ public class CreateClassificationHandler : IRequestHandler<CreateClassificationC
     public async Task<ErrorOr<Classification>> Handle(CreateClassificationCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+        ArgumentNullException.ThrowIfNull(request.MetadataTypes);
+
         var existingResult = await Mediator.Send(
             new GetClassificationByNameQuery() { Name = request.Name },
             cancellationToken);

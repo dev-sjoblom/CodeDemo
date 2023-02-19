@@ -15,6 +15,8 @@ public class GetClassificationByIdHandler : IRequestHandler<GetClassificationByI
     public async Task<ErrorOr<Classification>> Handle(GetClassificationByIdQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var classification = await DbContext.Classification
             .Include(x => x.MetadataTypes)
             .Where(x => x.Id == request.Id)

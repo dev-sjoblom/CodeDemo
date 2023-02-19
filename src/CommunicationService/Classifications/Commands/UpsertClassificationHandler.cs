@@ -28,6 +28,10 @@ public class UpsertClassificationHandler : IRequestHandler<UpsertClassificationC
     public async Task<ErrorOr<UpsertClassificationCommandResult>> Handle(UpsertClassificationCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+        ArgumentNullException.ThrowIfNull(request.MetadataTypes);
+
         var classificationResult =
             await Mediator.Send(new GetClassificationByIdQuery() { Id = request.Id }, cancellationToken);
         var registerAsNew = false;

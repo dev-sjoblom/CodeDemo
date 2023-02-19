@@ -22,6 +22,8 @@ public class DeleteReceiverHandler : IRequestHandler<DeleteReceiverCommand, Erro
     public async Task<ErrorOr<Deleted>> Handle(DeleteReceiverCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        
         var classificationResult = await Mediator.Send(
             new GetReceiverByIdQuery() { Id = request.Id },
             cancellationToken);
