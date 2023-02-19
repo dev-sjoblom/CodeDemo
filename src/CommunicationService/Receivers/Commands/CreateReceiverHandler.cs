@@ -23,6 +23,12 @@ public class CreateReceiverHandler : IRequestHandler<CreateReceiverCommand, Erro
     public async Task<ErrorOr<Receiver>> Handle(CreateReceiverCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.UniqueName);
+        ArgumentNullException.ThrowIfNull(request.Email);
+        ArgumentNullException.ThrowIfNull(request.Classifications);
+        ArgumentNullException.ThrowIfNull(request.Metadatas);
+
         var existingResult = await Mediator.Send(
             new GetReceiverByNameQuery() { UniqueName = request.UniqueName },
             cancellationToken);

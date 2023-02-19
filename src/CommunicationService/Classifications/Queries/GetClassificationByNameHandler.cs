@@ -15,6 +15,9 @@ public class GetClassificationByNameHandler : IRequestHandler<GetClassificationB
     public async Task<ErrorOr<Classification>> Handle(GetClassificationByNameQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+
         var classification = await DbContext.Classification
             .Include(x => x.MetadataTypes)
             .Where(x => x.Name == request.Name)

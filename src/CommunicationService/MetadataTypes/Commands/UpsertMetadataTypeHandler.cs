@@ -28,6 +28,10 @@ public class UpsertMetadataTypeHandler : IRequestHandler<UpsertMetadataTypeComma
     public async Task<ErrorOr<UpsertMetadataTypeCommandResult>> Handle(UpsertMetadataTypeCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+        ArgumentNullException.ThrowIfNull(request.Classifications);
+
         var metadataTypeResult =
             await Mediator.Send(new GetMetadataTypeByIdQuery() { Id = request.Id }, cancellationToken);
         var registerAsNew = false;

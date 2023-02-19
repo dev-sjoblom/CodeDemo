@@ -22,6 +22,8 @@ public class DeleteMetadataTypeHandler : IRequestHandler<DeleteMetadataTypeComma
     public async Task<ErrorOr<Deleted>> Handle(DeleteMetadataTypeCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var classificationResult = await Mediator.Send(
             new GetMetadataTypeByIdQuery() { Id = request.Id },
             cancellationToken);

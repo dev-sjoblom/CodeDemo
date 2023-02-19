@@ -36,8 +36,10 @@ public abstract class ApiController : ControllerBase
             { NumericType: StatusCodes.Status424FailedDependency } => StatusCodes.Status424FailedDependency,
             _ => StatusCodes.Status500InternalServerError
         };
-        
-        Logger.LogInformation("Managed error occurred with status code {StatusCode} in request:{@Error}", statusCode, errors);
+
+        Logger.LogInformation("Managed error occurred with status code {StatusCode} in request:{@Error}",
+            statusCode,
+            errors);
 
         return Problem(statusCode: statusCode, title: firstError.Description);
     }

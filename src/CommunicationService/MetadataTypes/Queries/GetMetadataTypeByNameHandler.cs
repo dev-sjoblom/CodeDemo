@@ -15,6 +15,9 @@ public class GetMetadataTypeByNameHandler : IRequestHandler<GetMetadataTypeByNam
     public async Task<ErrorOr<MetadataType>> Handle(GetMetadataTypeByNameQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Name);
+
         var metadataType = await DbContext.MetadataType
             .Include(x => x.Classifications)
             .Where(x => x.Name == request.Name)

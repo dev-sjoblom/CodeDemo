@@ -28,6 +28,12 @@ public class UpsertReceiverHandler : IRequestHandler<UpsertReceiverCommand, Erro
     public async Task<ErrorOr<UpsertReceiverCommandResult>> Handle(UpsertReceiverCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.UniqueName);
+        ArgumentNullException.ThrowIfNull(request.Email);
+        ArgumentNullException.ThrowIfNull(request.Classifications);
+        ArgumentNullException.ThrowIfNull(request.Metadatas);
+
         var receiverResult =
             await Mediator.Send(new GetReceiverByIdQuery() { Id = request.Id }, cancellationToken);
         var registerAsNew = false;

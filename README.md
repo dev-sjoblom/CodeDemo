@@ -56,7 +56,7 @@ Version: Draft 1 (Work in progress)
 - Security: Key or username/password?
 - Reactoring: Hide boilerplate code
 - Validation
-- Null Guards
+- ~~Null Guards~~
 - Secrets
 - OpenTelemetry
 

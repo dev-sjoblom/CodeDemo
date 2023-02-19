@@ -15,6 +15,8 @@ public class GetReceiversHandler : IRequestHandler<GetReceiversQuery, ErrorOr<IE
     public async Task<ErrorOr<IEnumerable<Receiver>>> Handle(GetReceiversQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         return await DbContext.Receiver
             .Include(x => x.Classifications)
             .Include(x => x.Metadatas)

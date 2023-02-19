@@ -15,6 +15,8 @@ public class GetClassificationsHandler : IRequestHandler<GetClassificationsQuery
     public async Task<ErrorOr<IEnumerable<Classification>>> Handle(GetClassificationsQuery request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var classification = await DbContext.Classification
             .Include(x => x.MetadataTypes)
             .ToListAsync(cancellationToken);

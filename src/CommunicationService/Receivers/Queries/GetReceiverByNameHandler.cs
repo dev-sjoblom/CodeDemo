@@ -14,6 +14,9 @@ public class GetReceiverByNameHandler : IRequestHandler<GetReceiverByNameQuery, 
 
     public async Task<ErrorOr<Receiver>> Handle(GetReceiverByNameQuery request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.UniqueName);
+
         var receiver = await DbContext.Receiver
             .Include(x => x.Classifications)
             .Include(x => x.Metadatas)

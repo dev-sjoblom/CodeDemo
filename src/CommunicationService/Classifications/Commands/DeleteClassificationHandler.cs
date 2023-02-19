@@ -22,6 +22,8 @@ public class DeleteClassificationHandler : IRequestHandler<DeleteClassificationC
     public async Task<ErrorOr<Deleted>> Handle(DeleteClassificationCommand request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var classificationResult = await Mediator.Send(
             new GetClassificationByIdQuery() { Id = request.Id },
             cancellationToken);
