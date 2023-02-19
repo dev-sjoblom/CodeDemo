@@ -1,5 +1,7 @@
 using CommunicationService.Receivers.Api.Model;
-using CommunicationService.Receivers.Core;
+using CommunicationService.Receivers.Data;
+using CommunicationService.Receivers.Queries;
+using MediatR;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -9,20 +11,24 @@ namespace CommunicationService.Receivers.Api;
 [Route("[controller]")]
 public class ReceiverListController : ReceiverBaseController
 {
-    private IReceiverRepositoryReader Read { get; }
+    private IMediator Mediator { get; }
 
-    public ReceiverListController(IReceiverRepositoryReader read, ILogger<ReceiverListController> logger) : base(logger)
+    public ReceiverListController(ILogger<ReceiverListController> logger,
+        IMediator mediator
+    ) : base(logger)
     {
-        Read = read;
+        Mediator = mediator;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> ListReceivers(CancellationToken cancellationToken)
     {
-        var classificationsResult  = await Read.ListReceivers(cancellationToken);
+        var result = await Mediator.Send(
+            new GetReceiversQuery(),
+            cancellationToken);
 
-        return classificationsResult.Match(
+        return result.Match(
             item => Ok(item.Select(x => x.ToReceiverResponse())),
-            onError: Problem);
+            Problem);
     }
 }

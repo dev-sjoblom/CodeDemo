@@ -1,6 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
-using CommunicationService.MetadataTypes.Core;
-using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.Commands;
+using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
 
@@ -12,29 +12,27 @@ namespace CommunicationService.MetadataTypes.Api;
 [Route("[controller]")]
 public class MetadataTypeCreateController : MetadataTypeBaseController
 {
-    private IMetadataTypeRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public MetadataTypeCreateController(IMetadataTypeRepositoryWriter repositoryWriter, ILogger<IMetadataTypeRepositoryWriter> logger) : base(logger)
+    public MetadataTypeCreateController(
+        ILogger<MetadataTypeCreateController> logger,
+        IMediator mediator) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
-    
+
     [HttpPost]
-    public async Task<IActionResult> CreateMetadataType(CreateMetadataTypeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateMetadataType(CreateMetadataTypeRequest request,
+        CancellationToken cancellationToken)
     {
-        var metadataTypeResult = request.ToMetadataType();
-        if (metadataTypeResult.IsError)
+        var result = await Mediator.Send(new CreateMetadataTypeCommand()
         {
-            return Problem(metadataTypeResult.Errors);
-        }
+            Name = request.Name,
+            Classifications = request.Classifications
+        }, cancellationToken);
 
-        var metadataType = metadataTypeResult.Value;
-
-        var createMetadataTypeResult = await
-            RepositoryWriter.CreateMetadataType(metadataType, request.Classifications, cancellationToken);
-
-        return createMetadataTypeResult.Match(
-            _ => CreatedAtMetadataType(metadataType),
+        return result.Match(
+            CreatedAtMetadataType,
             Problem);
     }
 }

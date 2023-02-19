@@ -8,15 +8,17 @@ public static class ServiceHelper
     {
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
-        
+
         builder.Host.ConfigureLogging();
 
         var connectionString = builder.Configuration.GetConnectionString("ServiceSqlConnectionString") ??
                                throw new ApplicationException("Config: ServiceSqlConnectionString is missing");
-        
+
         services.ConfigureServices(connectionString);
 
         services.AddControllers();
+        services.AddMediatR(option =>
+            option.RegisterServicesFromAssembly(typeof(Program).Assembly));
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
@@ -26,7 +28,8 @@ public static class ServiceHelper
 
         if (app.Environment.IsDevelopment())
         {
-            DatabaseHelper.CreateDatabaseIsMissing(connectionString);
+            if (!string.IsNullOrEmpty(connectionString))
+                DatabaseHelper.CreateDatabaseIsMissing(connectionString);
 
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -43,5 +46,15 @@ public static class ServiceHelper
         app.MapControllers();
 
         return app;
+    }
+
+    private static IConfigurationRoot CreateConfiguration()
+    {
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", false)
+            .AddJsonFile("appsettings.Development.json", true)
+            .Build();
+
+        return config;
     }
 }

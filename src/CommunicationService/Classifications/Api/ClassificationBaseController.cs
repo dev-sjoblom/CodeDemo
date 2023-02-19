@@ -1,4 +1,3 @@
-using CommunicationService.Classifications.Core;
 using CommunicationService.Classifications.Data;
 using CommunicationService.Fundamental.Controllers;
 

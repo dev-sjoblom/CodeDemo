@@ -1,5 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
-using CommunicationService.Receivers.Core;
+using CommunicationService.Receivers.Commands;
+using MediatR;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -9,32 +10,31 @@ namespace CommunicationService.Receivers.Api;
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [Route("[controller]")]
-
 public class ReceiverCreateController : ReceiverBaseController
 {
-    private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public ReceiverCreateController(IReceiverRepositoryWriter classificationRepositoryWriter, ILogger<ReceiverCreateController> logger) : base(logger)
+    public ReceiverCreateController(
+        ILogger<ReceiverCreateController> logger,
+        IMediator mediator
+    ) : base(logger)
     {
-        ReceiverRepositoryWriter = classificationRepositoryWriter;
+        Mediator = mediator;
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> CreateReceiver(CreateReceiverRequest request, CancellationToken cancellationToken)
     {
-        var receiverResult = request.ToReceiver();
-        if (receiverResult.IsError)
-            return Problem(receiverResult.Errors);
-        var receiver = receiverResult.Value;
-        
-        var createReceiverResult = await ReceiverRepositoryWriter.CreateReceiver(
-            receiver, 
-            request.Classifications,
-            request.Metadata, 
-            cancellationToken);
-        
-        return createReceiverResult.Match(
-            _ => CreatedAtReceiver(receiver),
+        var result = await Mediator.Send(new CreateReceiverCommand()
+        {
+            UniqueName = request.UniqueName,
+            Email = request.Email,
+            Classifications = request.Classifications,
+            Metadatas = request.Metadata
+        }, cancellationToken);
+
+        return result.Match(
+            CreatedAtReceiver,
             Problem);
     }
 }

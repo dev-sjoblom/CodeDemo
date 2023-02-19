@@ -1,5 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
-using CommunicationService.Receivers.Core;
+using CommunicationService.Receivers.Commands;
+using MediatR;
 
 namespace CommunicationService.Receivers.Api;
 
@@ -13,34 +14,31 @@ namespace CommunicationService.Receivers.Api;
 [Route("[controller]")]
 public class ReceiverUpsertController : ReceiverBaseController
 {
-    private IReceiverRepositoryWriter ReceiverRepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public ReceiverUpsertController(IReceiverRepositoryWriter classificationRepositoryWriter, ILogger<ReceiverUpsertController> logger) : base(logger)
+    public ReceiverUpsertController(
+        ILogger<ReceiverUpsertController> logger,
+        IMediator mediator) : base(logger)
     {
-        ReceiverRepositoryWriter = classificationRepositoryWriter;
+        Mediator = mediator;
     }
-    
-    
+
+
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpsertReceiver(Guid id, UpsertReceiverRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpsertReceiver(Guid id, UpsertReceiverRequest request,
+        CancellationToken cancellationToken)
     {
-        var receiverResult = request.ToReceiver(id);
-
-        if (receiverResult.IsError)
+        var result = await Mediator.Send(new UpsertReceiverCommand()
         {
-            return Problem(receiverResult.Errors);
-        }
+            Id = id,
+            UniqueName = request.UniqueName,
+            Email = request.Email,
+            Classifications = request.Classifications,
+            Metadatas = request.Metadata
+        }, cancellationToken);
 
-        var receiver = receiverResult.Value;
-        var upsertedResult = await ReceiverRepositoryWriter.UpsertReceiver(
-            receiver, 
-            request.Classifications, 
-            request.Metadata,
-            cancellationToken);
-        
-        return upsertedResult.Match(
-            item => item.RegisteredAsNewItem ? CreatedAtReceiver(receiver) : NoContent(),
+        return result.Match(
+            item => item.RegisteredAsNewItem ? CreatedAtReceiver(item.Receiver) : NoContent(),
             Problem);
     }
-
 }

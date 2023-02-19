@@ -1,6 +1,6 @@
 using CommunicationService.Classifications.Api.Model;
-using CommunicationService.Classifications.Core;
-using CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.Commands;
+using MediatR;
 
 namespace CommunicationService.Classifications.Api;
 
@@ -14,11 +14,14 @@ namespace CommunicationService.Classifications.Api;
 [Route("[controller]")]
 public class ClassificationUpsertController : ClassificationBaseController
 {
-    private IClassificationRepositoryWriter RepositoryWriter { get; }
+    private IMediator Mediator { get; }
 
-    public ClassificationUpsertController(IClassificationRepositoryWriter repositoryWriter, ILogger<ClassificationUpsertController> logger) : base(logger)
+    public ClassificationUpsertController(
+        ILogger<ClassificationUpsertController> logger,
+        IMediator mediator
+    ) : base(logger)
     {
-        RepositoryWriter = repositoryWriter;
+        Mediator = mediator;
     }
 
     [HttpPut("{id:guid}")]
@@ -26,21 +29,15 @@ public class ClassificationUpsertController : ClassificationBaseController
         UpsertClassificationRequest request,
         CancellationToken cancellationToken)
     {
-        var classificationResult = request.ToClassification(id);
-
-        if (classificationResult.IsError)
+        var result = await Mediator.Send(new UpsertClassificationCommand()
         {
-            return Problem(classificationResult.Errors);
-        }
+            Id = id,
+            Name = request.Name,
+            MetadataTypes = request.MetadataTypes
+        }, cancellationToken);
 
-        var classification = classificationResult.Value;
-        var upsertedResult = await RepositoryWriter.UpsertClassification(
-            classification,
-            request.MetadataTypes,
-            cancellationToken);
-
-        return upsertedResult.Match(item => item.RegisteredAsNewItem
-                ? CreatedAtClassification(classification)
+        return result.Match(item => item.RegisteredAsNewItem
+                ? CreatedAtClassification(item.Classification)
                 : NoContent(),
             Problem);
     }

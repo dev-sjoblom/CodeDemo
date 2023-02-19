@@ -2,6 +2,8 @@ using CommunicationService.Classifications.Data;
 using CommunicationService.MetadataTypes.Data;
 using CommunicationService.Receivers.Data;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
+
 namespace CommunicationService.Fundamental;
 
 public class CommunicationDbContext : DbContext

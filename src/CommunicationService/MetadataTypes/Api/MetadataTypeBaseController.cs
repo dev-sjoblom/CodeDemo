@@ -1,5 +1,4 @@
 using CommunicationService.Fundamental.Controllers;
-using CommunicationService.MetadataTypes.Core;
 using CommunicationService.MetadataTypes.Data;
 
 namespace CommunicationService.MetadataTypes.Api;
@@ -11,9 +10,8 @@ public class MetadataTypeBaseController : ApiController
 
     public MetadataTypeBaseController(ILogger logger) : base(logger)
     {
-        
     }
-    
+
     protected CreatedAtActionResult CreatedAtMetadataType(MetadataType metadataType)
     {
         return CreatedAtAction(

@@ -10,6 +10,5 @@ public partial class MetadataType
 
     public string Name { get; set; } = null!;
 
-    public List<Classification> Classifications { get; private set; }
-
+    public List<Classification> Classifications { get; }
 }
