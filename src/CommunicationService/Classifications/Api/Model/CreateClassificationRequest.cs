@@ -1,3 +1,7 @@
 namespace CommunicationService.Classifications.Api.Model;
 
-public record CreateClassificationRequest(string Name, string[] MetadataTypes);
+public class CreateClassificationRequest
+{
+    public required string Name { get; init; }
+    public required string[] MetadataTypes { get; init; }
+}

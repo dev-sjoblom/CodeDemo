@@ -22,7 +22,7 @@ public partial class Classification
     {
         List<Error> errors = new();
 
-        if (name.Length is < MinNameLength or > MaxNameLength)
+        if (name.Length is < ClassificationConstants.MinNameLength or > ClassificationConstants.MaxNameLength)
         {
             errors.Add(InvalidNameLength);
         }

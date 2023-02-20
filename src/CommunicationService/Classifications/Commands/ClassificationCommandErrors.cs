@@ -6,8 +6,8 @@ public static class ClassificationCommandErrors
 {
     public static Error InvalidNameLength => Error.Validation(
         "Classification.InvalidNameLength",
-        $"Classification name must be at least {Classification.MinNameLength}" +
-        $" characters long and at most {Classification.MaxNameLength} characters long.");
+        $"Classification name must be at least {ClassificationConstants.MinNameLength}" +
+        $" characters long and at most {ClassificationConstants.MaxNameLength} characters long.");
 
     public static Error InvalidName => Error.Validation(
         "Classification.InvalidName",
