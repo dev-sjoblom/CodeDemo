@@ -1,5 +1,6 @@
 using CommunicationService.Classifications.Api.Model;
 using CommunicationService.Classifications.Commands;
+using FluentValidation;
 using MediatR;
 
 namespace CommunicationService.Classifications.Api;
@@ -15,13 +16,15 @@ namespace CommunicationService.Classifications.Api;
 public class ClassificationUpsertController : ClassificationBaseController
 {
     private IMediator Mediator { get; }
+    private IValidator<UpsertClassificationRequest> RequestValidator { get; }
 
     public ClassificationUpsertController(
         ILogger<ClassificationUpsertController> logger,
-        IMediator mediator
-    ) : base(logger)
+        IMediator mediator,
+        IValidator<UpsertClassificationRequest> RequestValidator) : base(logger)
     {
         Mediator = mediator;
+        this.RequestValidator = RequestValidator;
     }
 
     [HttpPut("{id:guid}")]
@@ -29,6 +32,11 @@ public class ClassificationUpsertController : ClassificationBaseController
         UpsertClassificationRequest request,
         CancellationToken cancellationToken)
     {
+        var validationResult = await RequestValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return ValidationProblem(validationResult);
+
         var result = await Mediator.Send(new UpsertClassificationCommand()
         {
             Id = id,

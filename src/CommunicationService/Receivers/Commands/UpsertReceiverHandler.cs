@@ -1,7 +1,6 @@
 using CommunicationService.Classifications.Queries;
 using CommunicationService.Receivers.Data;
 using CommunicationService.Receivers.Queries;
-using CommunicationService.Fundamental.Helpers;
 using CommunicationService.MetadataTypes.Queries;
 using MediatR;
 
@@ -48,11 +47,12 @@ public class UpsertReceiverHandler : IRequestHandler<UpsertReceiverCommand, Erro
         Receiver receiver;
         if (registerAsNew)
         {
-            var registerReceiverResult = Receiver.Create(request.UniqueName, request.Email, request.Id);
-            if (registerReceiverResult.IsError)
-                return registerReceiverResult.Errors;
-
-            receiver = registerReceiverResult.Value;
+            receiver = new Receiver
+            {
+                Id = request.Id,
+                UniqueName = request.UniqueName,
+                Email = request.Email
+            };
 
             DbContext.Receiver.Add(receiver);
         }

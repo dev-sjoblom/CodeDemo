@@ -1,5 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.MetadataTypes.Commands;
+using FluentValidation;
 using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
@@ -15,18 +16,27 @@ namespace CommunicationService.MetadataTypes.Api;
 public class MetadataTypeUpsertController : MetadataTypeBaseController
 {
     private IMediator Mediator { get; }
+    private IValidator<UpsertMetadataTypeRequest> RequestValidator { get; }
 
     public MetadataTypeUpsertController(
         ILogger<MetadataTypeUpsertController> logger,
-        IMediator mediator) : base(logger)
+        IMediator mediator,
+        IValidator<UpsertMetadataTypeRequest> requestValidator
+    ) : base(logger)
     {
         Mediator = mediator;
+        RequestValidator = requestValidator;
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpsertMetadataType(Guid id, UpsertMetadataTypeRequest request,
         CancellationToken cancellationToken)
     {
+        var validationResult = await RequestValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return ValidationProblem(validationResult);
+
         var result = await Mediator.Send(
             new UpsertMetadataTypeCommand()
             {

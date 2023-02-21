@@ -7,17 +7,19 @@ public static class ClassificationEntityCreator
 {
     public static MetadataType CreateMetadataType(string name)
     {
-        var createMetadataTypeResult = MetadataType.Create(name);
-        createMetadataTypeResult.IsError.Should().BeFalse(createMetadataTypeResult.FirstError.Description);
-        var metadataType = createMetadataTypeResult.Value;
-        return metadataType;
+        return new MetadataType()
+        {
+            Id = Guid.NewGuid(),
+            Name = name
+        };
     }
 
     public static Classification CreateClassification(string name)
     {
-        var createClassificationResult = Classification.Create(name);
-        createClassificationResult.IsError.Should().BeFalse(createClassificationResult.FirstError.Description);
-        var classification = createClassificationResult.Value;
-        return classification;
+        return new Classification()
+        {
+            Id = Guid.NewGuid(),
+            Name = name
+        };
     }
 }

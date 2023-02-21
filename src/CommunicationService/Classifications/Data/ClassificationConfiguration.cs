@@ -12,8 +12,8 @@ public class ClassificationConfiguration : IEntityTypeConfiguration<Classificati
             .WithMany(x => x.Classifications)
             .UsingEntity<MetadataTypeClassification>(
                 right => right.HasOne(x => x.MetadataType).WithMany().HasForeignKey(x => x.MetadataTypeId),
-                left => left.HasOne(x => x.Classification).WithMany().HasForeignKey(x => x.ClassificationId));;
-        
+                left => left.HasOne(x => x.Classification).WithMany().HasForeignKey(x => x.ClassificationId));
+
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
@@ -22,6 +22,6 @@ public class ClassificationConfiguration : IEntityTypeConfiguration<Classificati
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(Classification.MaxNameLength);
+            .HasMaxLength(ClassificationConstants.MaxNameLength);
     }
 }

@@ -1,5 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Commands;
+using FluentValidation;
 using MediatR;
 
 namespace CommunicationService.Receivers.Api;
@@ -15,12 +16,15 @@ namespace CommunicationService.Receivers.Api;
 public class ReceiverUpsertController : ReceiverBaseController
 {
     private IMediator Mediator { get; }
+    private IValidator<UpsertReceiverRequest> RequestValidator { get; }
 
     public ReceiverUpsertController(
         ILogger<ReceiverUpsertController> logger,
-        IMediator mediator) : base(logger)
+        IMediator mediator,
+        IValidator<UpsertReceiverRequest> requestValidator) : base(logger)
     {
         Mediator = mediator;
+        RequestValidator = requestValidator;
     }
 
 
@@ -28,6 +32,11 @@ public class ReceiverUpsertController : ReceiverBaseController
     public async Task<IActionResult> UpsertReceiver(Guid id, UpsertReceiverRequest request,
         CancellationToken cancellationToken)
     {
+        var validationResult = await RequestValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return ValidationProblem(validationResult);
+
         var result = await Mediator.Send(new UpsertReceiverCommand()
         {
             Id = id,

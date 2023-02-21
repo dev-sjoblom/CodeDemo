@@ -1,5 +1,6 @@
 using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.MetadataTypes.Commands;
+using FluentValidation;
 using MediatR;
 
 namespace CommunicationService.MetadataTypes.Api;
@@ -13,18 +14,27 @@ namespace CommunicationService.MetadataTypes.Api;
 public class MetadataTypeCreateController : MetadataTypeBaseController
 {
     private IMediator Mediator { get; }
+    private IValidator<CreateMetadataTypeRequest> RequestValidator { get; }
 
     public MetadataTypeCreateController(
         ILogger<MetadataTypeCreateController> logger,
-        IMediator mediator) : base(logger)
+        IMediator mediator,
+        IValidator<CreateMetadataTypeRequest> requestValidator
+    ) : base(logger)
     {
         Mediator = mediator;
+        RequestValidator = requestValidator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateMetadataType(CreateMetadataTypeRequest request,
         CancellationToken cancellationToken)
     {
+        var validationResult = await RequestValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return ValidationProblem(validationResult);
+
         var result = await Mediator.Send(new CreateMetadataTypeCommand()
         {
             Name = request.Name,

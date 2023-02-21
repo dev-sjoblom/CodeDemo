@@ -2,10 +2,10 @@ using CommunicationService.MetadataTypes.Data;
 
 namespace CommunicationService.Classifications.Data;
 
-public partial class Classification
+public class Classification
 {
-    public Guid Id { get; }
+    public required Guid Id { get; init; }
 
-    public string Name { get; set; } = null!;
-    public List<MetadataType> MetadataTypes { get; set; }
+    public required string Name { get; set; }
+    public List<MetadataType> MetadataTypes { get; set; } = new();
 }

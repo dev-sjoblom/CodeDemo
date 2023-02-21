@@ -1,4 +1,3 @@
-using CommunicationService.Fundamental.Helpers;
 using Serilog;
 
 namespace CommunicationService;

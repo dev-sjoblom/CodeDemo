@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CommunicationService.Receivers.Data;
 
-public partial class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
+public class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
 {
     public void Configure(EntityTypeBuilder<Receiver> builder)
     {
@@ -19,12 +19,12 @@ public partial class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
                         .HasOne(x => x.Receiver)
                         .WithMany()
                         .HasForeignKey(x => x.ReceiverId));
-        
+
         builder.HasIndex(x => x.UniqueName)
             .IsUnique();
 
         builder.Property(x => x.UniqueName)
             .IsRequired()
-            .HasMaxLength(Receiver.MaxNameLength);
+            .HasMaxLength(ReceiverConstants.MaxNameLength);
     }
 }

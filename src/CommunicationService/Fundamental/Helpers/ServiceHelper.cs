@@ -1,3 +1,6 @@
+using CommunicationService.Fundamental.Behaviors;
+using FluentValidation;
+using MediatR;
 using Serilog;
 
 namespace CommunicationService.Fundamental.Helpers;
@@ -13,6 +16,9 @@ public static class ServiceHelper
 
         var connectionString = builder.Configuration.GetConnectionString("ServiceSqlConnectionString") ??
                                throw new ApplicationException("Config: ServiceSqlConnectionString is missing");
+
+        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddValidatorsFromAssembly(typeof(Program).Assembly, ServiceLifetime.Singleton);
 
         services.ConfigureServices(connectionString);
 

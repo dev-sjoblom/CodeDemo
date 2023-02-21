@@ -1,4 +1,5 @@
 using CommunicationService.Classifications.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunicationService.Test.ClassificationTests.Helpers;
 
@@ -7,22 +8,29 @@ public static class ClassificationDbContextHelper
     public static Classification AddClassification(this CommunicationDbContext dbContext,
         string classificationName)
     {
-        var classification = CreateClassification(classificationName);
+        var classification = dbContext.ChangeTracker.Entries()
+            .Where(x => x is { State: EntityState.Added, Entity: Classification classification } &&
+                        classification.Name == classificationName)
+            .Select(x => x.Entity as Classification)
+            .SingleOrDefault();
+
+        if (classification != null)
+            return classification;
+
+        classification = CreateClassification(classificationName);
         dbContext.Classification.Add(classification);
 
         return classification;
     }
-    
+
     public static void AddClassification(this CommunicationDbContext dbContext,
         string[] classificationNames)
     {
         if (classificationNames is null)
             return;
-        
+
         foreach (var item in classificationNames)
-        {
             dbContext.AddClassification(item);
-        }
     }
 
     public static void AddClassificationWithMetadata(this CommunicationDbContext dbContext,
@@ -31,7 +39,7 @@ public static class ClassificationDbContextHelper
     {
         if (classificationNames is null)
             return;
- 
+
         var metadataType = dbContext.AddMetadataType(metadataTypeName);
 
         foreach (var c in classificationNames)

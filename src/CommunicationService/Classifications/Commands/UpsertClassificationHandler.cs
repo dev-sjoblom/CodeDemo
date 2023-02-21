@@ -1,6 +1,5 @@
 using CommunicationService.Classifications.Data;
 using CommunicationService.Classifications.Queries;
-using CommunicationService.Fundamental.Helpers;
 using CommunicationService.MetadataTypes.Queries;
 using MediatR;
 
@@ -46,11 +45,11 @@ public class UpsertClassificationHandler : IRequestHandler<UpsertClassificationC
         Classification classification;
         if (registerAsNew)
         {
-            var registerClassificationResult = Classification.Create(request.Name, request.Id);
-            if (registerClassificationResult.IsError)
-                return registerClassificationResult.Errors;
-
-            classification = registerClassificationResult.Value;
+            classification = new Classification()
+            {
+                Id = request.Id,
+                Name = request.Name
+            };
 
             DbContext.Classification.Add(classification);
         }

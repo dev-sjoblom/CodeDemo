@@ -26,20 +26,21 @@ public partial class ReceiverTest
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
         dbContext.AddClassificationWithMetadata(classifications, metadataTypeName);
         await dbContext.SaveChangesAsync();
+        var url = UpsertReceiverUrl(Guid.NewGuid());
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest(
-            uniqueName,
-            email,
-            classifications,
-            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
-        ).AsJsonStringContent();
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = classifications,
+            Metadata = new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(UpsertReceiverUrl(Guid.NewGuid()), body);
+        var response = await client.PutAsync(url, body);
         var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
@@ -79,12 +80,13 @@ public partial class ReceiverTest
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest(
-            uniqueName,
-            email,
-            classifications,
-            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
-        ).AsJsonStringContent();
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = classifications,
+            Metadata = new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
 
         // act
         var response = await client.PutAsync(UpsertReceiverUrl(receiver.Id), body);
@@ -103,28 +105,34 @@ public partial class ReceiverTest
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName)]
-    public async Task UpsertReceiver_UpdateWithBusyName_ShouldReturnConflict(string receiverName, string receiverEmail,
+    [InlineAutoMoq(
+        ValidReceiverName, ValidReceiverEmail, 
+        $"other{ValidReceiverName}", $"other{ValidReceiverEmail}", 
+        ValidClassificationName)]
+    public async Task UpsertReceiver_UpdateWithBusyName_ShouldReturnConflict(
+        string name, string email,
+        string otherName, string otherEmail,
         string classificationName)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        //var classification = dbContext.AddClassification(classificationName);
-        dbContext.AddReceiverWithClassifications(receiverName, receiverEmail, new[] { classificationName });
+        dbContext.AddReceiverWithClassifications(name, email, new[] { classificationName });
         var receiver =
-            dbContext.AddReceiverWithClassifications($"{receiverName}A", $"{receiverEmail}A",
-                new[] { $"{classificationName}A" });
+            dbContext.AddReceiverWithClassifications(otherName, otherEmail,
+                new[] { classificationName });
 
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var body = new UpsertReceiverRequest(
-                receiver.UniqueName,
-                receiverEmail,
-                new[] { classificationName },
-                Array.Empty<KeyValuePair<string, string>>())
+        var body = new UpsertReceiverRequest()
+            {
+                UniqueName = receiver.UniqueName,
+                Email = email,
+                Classifications = new[] { classificationName },
+                Metadata = Array.Empty<KeyValuePair<string, string>>()
+            }
             .AsJsonStringContent();
 
         // act
@@ -164,7 +172,7 @@ public partial class ReceiverTest
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
     }
-    
+
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_UpdateReceiverWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
@@ -185,6 +193,85 @@ public partial class ReceiverTest
             Email = email,
             Classifications = new[] { classificationName },
             Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PutAsync(url, body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+    }
+
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task UpsertReceiver_MissingClassification_ReturnsBadRequest(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
+        var receiver = dbContext.AddReceiverWithClassifications(uniqueName, email, new[] { classificationName });
+        await dbContext.SaveChangesAsync();
+        var url = UpsertReceiverUrl(receiver.Id);
+
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = Array.Empty<string>(),
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PutAsync(url, body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, stringContent);
+        stringContent.Should().Contain("Least one classification needs to be specified");
+    }
+
+
+    [Theory]
+    [InlineAutoMoq(
+        ValidReceiverName, ValidReceiverEmail,
+        $"Other{ValidClassificationName}",
+        $"Other{ValidMetadataTypeName}",
+        ValidClassificationName,
+        ValidMetadataTypeName,
+        "DATA")]
+    public async Task UpsertReceiver_RemoveRequiredClassification_ReturnsFailedDependency(
+        string uniqueName, string email,
+        string otherClassification,
+        string otherMetadataType,
+        string classification,
+        string metadataType,
+        string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataTypeWithClassification(metadataType, classification);
+        dbContext.AddMetadataTypeWithClassification(otherMetadataType, otherClassification);
+        dbContext.AddReceiverWithClassifications(uniqueName, email,
+            new[] { classification, otherClassification });
+        await dbContext.SaveChangesAsync();
+
+        var url = UpsertReceiverUrl(Guid.NewGuid());
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new CreateReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = new[] { classification },
+            Metadata = new[]
+            {
+                new KeyValuePair<string, string>(metadataType, metadataValue),
+                new KeyValuePair<string, string>(otherMetadataType, metadataValue)
+            }
         }.AsJsonStringContent();
 
         // Act

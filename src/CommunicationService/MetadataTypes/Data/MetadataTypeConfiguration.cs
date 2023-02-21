@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CommunicationService.MetadataTypes.Data;
 
-public class MetadataTypeModelConfiguration : IEntityTypeConfiguration<MetadataType>
+public class MetadataTypeConfiguration : IEntityTypeConfiguration<MetadataType>
 {
     public void Configure(EntityTypeBuilder<MetadataType> builder)
     {
@@ -28,6 +28,6 @@ public class MetadataTypeModelConfiguration : IEntityTypeConfiguration<MetadataT
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(MetadataType.MaxNameLength);
+            .HasMaxLength(MetadataTypeConstants.MaxNameLength);
     }
 }

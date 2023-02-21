@@ -1,3 +1,5 @@
+using FluentValidation.AspNetCore;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CommunicationService.Fundamental.Controllers;
@@ -13,13 +15,20 @@ public abstract class ApiController : ControllerBase
         Logger = logger;
     }
 
+    protected IActionResult ValidationProblem(ValidationResult validationResult)
+    {
+        validationResult.AddToModelState(ModelState);
+        return ValidationProblem(ModelState);
+    }
+
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.All(e => e.Type == ErrorType.Validation))
         {
             var modelStateDictionary = new ModelStateDictionary();
 
-            foreach (var error in errors) modelStateDictionary.AddModelError(error.Code, error.Description);
+            foreach (var error in errors)
+                modelStateDictionary.AddModelError(error.Code, error.Description);
 
             return ValidationProblem(modelStateDictionary);
         }
