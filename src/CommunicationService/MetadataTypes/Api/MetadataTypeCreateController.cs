@@ -35,7 +35,6 @@ public class MetadataTypeCreateController : MetadataTypeBaseController
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-
         var result = await Mediator.Send(new CreateMetadataTypeCommand()
         {
             Name = request.Name,
