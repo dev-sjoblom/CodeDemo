@@ -1,5 +1,6 @@
 using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Receivers.Commands;
+using FluentValidation;
 using MediatR;
 
 namespace CommunicationService.Receivers.Api;
@@ -13,18 +14,26 @@ namespace CommunicationService.Receivers.Api;
 public class ReceiverCreateController : ReceiverBaseController
 {
     private IMediator Mediator { get; }
+    private IValidator<CreateReceiverRequest> RequestValidator { get; }
 
     public ReceiverCreateController(
         ILogger<ReceiverCreateController> logger,
-        IMediator mediator
+        IMediator mediator,
+        IValidator<CreateReceiverRequest> requestValidator
     ) : base(logger)
     {
         Mediator = mediator;
+        RequestValidator = requestValidator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateReceiver(CreateReceiverRequest request, CancellationToken cancellationToken)
     {
+        var validationResult = await RequestValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return ValidationProblem(validationResult);
+
         var result = await Mediator.Send(new CreateReceiverCommand()
         {
             UniqueName = request.UniqueName,

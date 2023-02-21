@@ -1,7 +1,8 @@
+using CommunicationService.Classifications.Api.Model;
 using CommunicationService.Classifications.Data;
 using FluentValidation;
 
-namespace CommunicationService.Classifications.Api.Model;
+namespace CommunicationService.Classifications.Api.Validator;
 
 public class UpsertClassificationRequestValidator : AbstractValidator<UpsertClassificationRequest>
 {
@@ -10,7 +11,9 @@ public class UpsertClassificationRequestValidator : AbstractValidator<UpsertClas
         RuleFor(x => x.Name)
             .Length(
                 ClassificationConstants.MinNameLength,
-                ClassificationConstants.MaxNameLength);
+                ClassificationConstants.MaxNameLength)
+            .Matches(ClassificationConstants.NameMatchRule)
+            .WithMessage(ClassificationConstants.NamingDescription);
 
         RuleFor(x => x.MetadataTypes)
             .NotNull();

@@ -1,7 +1,6 @@
 using CommunicationService.Classifications.Api.Model;
 using CommunicationService.Classifications.Commands;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MediatR;
 
 namespace CommunicationService.Classifications.Api;

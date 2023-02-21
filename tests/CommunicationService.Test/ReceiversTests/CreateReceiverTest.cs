@@ -85,9 +85,10 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
         // Act
         var response = await client.PostAsync(CreateNewReceiverUrl(), body);
+        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, stringContent);
     }
 
     [Theory]
@@ -110,9 +111,10 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
         // Act
         var response = await client.PostAsync(CreateNewReceiverUrl(), body);
+        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound, stringContent);
     }
 
     [Theory]
@@ -142,5 +144,34 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+    }
+
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task CreateNewReceiver_MissingClassification_ReturnsBadRequest(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
+        await dbContext.SaveChangesAsync();
+
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new CreateReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = Array.Empty<string>(),
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PostAsync(CreateNewReceiverUrl(), body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, stringContent);
+        stringContent.Should().Contain("Least one classification needs to be specified");
     }
 }

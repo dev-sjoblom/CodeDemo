@@ -2,13 +2,11 @@ using CommunicationService.Classifications.Data;
 
 namespace CommunicationService.MetadataTypes.Data;
 
-public partial class MetadataType
+public class MetadataType
 {
-    public const int MinNameLength = 3;
-    public const int MaxNameLength = 50;
-    public Guid Id { get; set; }
+    public required Guid Id { get; init; }
 
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
 
-    public List<Classification> Classifications { get; }
+    public List<Classification> Classifications { get; } = new();
 }

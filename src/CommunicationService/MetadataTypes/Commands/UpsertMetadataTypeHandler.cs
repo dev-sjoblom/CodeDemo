@@ -1,7 +1,6 @@
 using CommunicationService.Classifications.Queries;
 using CommunicationService.MetadataTypes.Data;
 using CommunicationService.MetadataTypes.Queries;
-using CommunicationService.Fundamental.Helpers;
 using MediatR;
 
 namespace CommunicationService.MetadataTypes.Commands;
@@ -43,22 +42,20 @@ public class UpsertMetadataTypeHandler : IRequestHandler<UpsertMetadataTypeComma
             registerAsNew = true;
         }
 
-        MetadataType metadataType = null!;
+        MetadataType metadataType;
         if (registerAsNew)
         {
-            var registerMetadataTypeResult = MetadataType.Create(request.Name, request.Id);
-
-            if (registerMetadataTypeResult.IsError)
-                return registerMetadataTypeResult.Errors;
-
-            metadataType = registerMetadataTypeResult.Value;
+            metadataType = new MetadataType()
+            {
+                Id = request.Id,
+                Name = request.Name
+            };
 
             DbContext.MetadataType.Add(metadataType);
         }
         else
         {
             metadataType = metadataTypeResult.Value;
-
             metadataType.Name = request.Name;
             DbContext.MetadataType.Update(metadataType);
         }

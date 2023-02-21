@@ -2,11 +2,11 @@ using CommunicationService.Classifications.Data;
 
 namespace CommunicationService.Receivers.Data;
 
-public partial class Receiver
+public class Receiver
 {
-    public Guid Id { get; set; }
-    public string UniqueName { get; set; } = null!;
-    public string Email { get; set; } = null!;
-    public List<Classification> Classifications { get; set; }
-    public List<ReceiverMetadata> Metadatas { get; set; }
+    public required Guid Id { get; init; }
+    public required string UniqueName { get; set; }
+    public required string Email { get; set; }
+    public List<Classification> Classifications { get; set; } = new();
+    public List<ReceiverMetadata> Metadatas { get; set; } = new();
 }

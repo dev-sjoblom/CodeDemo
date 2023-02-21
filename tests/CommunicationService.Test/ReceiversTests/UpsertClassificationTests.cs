@@ -31,12 +31,13 @@ public partial class ReceiverTest
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest(
-            uniqueName,
-            email,
-            classifications,
-            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
-        ).AsJsonStringContent();
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = classifications,
+            Metadata = new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
 
         // act
         var response = await client.PutAsync(UpsertReceiverUrl(Guid.NewGuid()), body);
@@ -79,12 +80,13 @@ public partial class ReceiverTest
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest(
-            uniqueName,
-            email,
-            classifications,
-            new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
-        ).AsJsonStringContent();
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = classifications,
+            Metadata = new KeyValuePair<string, string>[] { new(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
 
         // act
         var response = await client.PutAsync(UpsertReceiverUrl(receiver.Id), body);
@@ -120,11 +122,13 @@ public partial class ReceiverTest
 
         var client = Fixture.GetMockedClient(dbContext);
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var body = new UpsertReceiverRequest(
-                receiver.UniqueName,
-                receiverEmail,
-                new[] { classificationName },
-                Array.Empty<KeyValuePair<string, string>>())
+        var body = new UpsertReceiverRequest()
+            {
+                UniqueName = receiver.UniqueName,
+                Email = receiverEmail,
+                Classifications = new[] { classificationName },
+                Metadata = Array.Empty<KeyValuePair<string, string>>()
+            }
             .AsJsonStringContent();
 
         // act
@@ -164,7 +168,7 @@ public partial class ReceiverTest
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
     }
-    
+
     [Theory]
     [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_UpdateReceiverWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
@@ -193,5 +197,36 @@ public partial class ReceiverTest
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+    }
+
+
+    [Theory]
+    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    public async Task UpsertReceiver_MissingClassification_ReturnsBadRequest(
+        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+    {
+        // arr
+        var dbContext = Fixture.CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
+        var receiver = dbContext.AddReceiverWithClassifications(uniqueName, email, new[] { classificationName });
+        await dbContext.SaveChangesAsync();
+
+        var client = Fixture.GetMockedClient(dbContext);
+        var body = new UpsertReceiverRequest()
+        {
+            UniqueName = uniqueName,
+            Email = email,
+            Classifications = Array.Empty<string>(),
+            Metadata = new[] { new KeyValuePair<string, string>(metadataTypeName, metadataValue) }
+        }.AsJsonStringContent();
+
+        // Act
+        var response = await client.PutAsync(UpsertReceiverUrl(receiver.Id), body);
+        var stringContent = await response.Content.ReadAsStringAsync();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, stringContent);
+        stringContent.Should().Contain("Least one classification needs to be specified");
     }
 }

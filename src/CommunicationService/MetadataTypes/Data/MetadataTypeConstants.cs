@@ -1,6 +1,6 @@
-namespace CommunicationService.Classifications.Data;
+namespace CommunicationService.MetadataTypes.Data;
 
-public class ClassificationConstants
+public class MetadataTypeConstants
 {
     public const int MinNameLength = 3;
     public const int MaxNameLength = 50;

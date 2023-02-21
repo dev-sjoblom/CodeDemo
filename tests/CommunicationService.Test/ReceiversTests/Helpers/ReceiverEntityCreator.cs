@@ -6,9 +6,11 @@ public static class ReceiverEntityCreator
 {
     public static Receiver CreateReceiver(string uniqueName, string email)
     {
-        var receiverResult = Receiver.Create(uniqueName, email);
-        receiverResult.IsError.Should().BeFalse(receiverResult.FirstError.Description);
-        var receiver = receiverResult.Value;
-        return receiver;
+        return new Receiver()
+        {
+            Id = Guid.NewGuid(),
+            UniqueName = uniqueName,
+            Email = email
+        };
     }
 }
