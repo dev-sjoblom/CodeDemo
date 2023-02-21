@@ -30,6 +30,7 @@ Version: Draft 1 (Work in progress)
 - Nullible
 - Clean Code'ish: Refactoring needed
 - Asynchronous
+- Fail fast
 
 # Project references
 
