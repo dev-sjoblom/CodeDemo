@@ -1,12 +1,12 @@
-using CommunicationService.Receivers.Api.Model;
 using CommunicationService.Test.ReceiversTests.Helpers;
+using CommunicationService.Test.ReceiversTests.Model;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string GetReceiverByIdUrl(Guid id) => $"/ReceiverGetById/{id}";
+    private string GetReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
 
     [Theory]
     [InlineAutoMoq(
@@ -39,7 +39,7 @@ public partial class ReceiverTest
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponse>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem>(jsonResponse)!;
         responseObject.Should().NotBeNull();
         responseObject.UniqueName.Should().Be(receiver.UniqueName);
         responseObject.Email.Should().Be(receiver.Email);

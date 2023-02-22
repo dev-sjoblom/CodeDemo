@@ -6,7 +6,7 @@ namespace CommunicationService.Test.ReceiversTests;
 
 public partial class ReceiverTest
 {
-    private string ListMetadataType() => "/ReceiverList";
+    private string ListMetadataType() => "/Receiver";
 
     [Theory]
     [InlineAutoMoq(
@@ -39,7 +39,7 @@ public partial class ReceiverTest
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponse[]>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem[]>(jsonResponse)!;
         
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);

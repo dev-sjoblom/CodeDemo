@@ -10,7 +10,7 @@ public partial class ReceiverTest
 {
     private string UpsertReceiverUrl(Guid id)
     {
-        return $"/ReceiverUpsert/{id}";
+        return $"/Receiver/{id}";
     }
 
     [Theory]
@@ -31,7 +31,7 @@ public partial class ReceiverTest
         var url = UpsertReceiverUrl(Guid.NewGuid());
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest()
+        var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -46,7 +46,7 @@ public partial class ReceiverTest
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
 
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponse>(stringContent)!;
+        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem>(stringContent)!;
         responseObject.Should().NotBeNull();
         responseObject.UniqueName.Should().Be(uniqueName);
         responseObject.Email.Should().Be(email);
@@ -80,7 +80,7 @@ public partial class ReceiverTest
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest()
+        var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -126,7 +126,7 @@ public partial class ReceiverTest
 
         var client = Fixture.GetMockedClient(dbContext);
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var body = new UpsertReceiverRequest()
+        var body = new UpsertReceiverRequestParameters()
             {
                 UniqueName = receiver.UniqueName,
                 Email = email,
@@ -157,7 +157,7 @@ public partial class ReceiverTest
 
         var url = UpsertReceiverUrl(Guid.NewGuid());
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -187,7 +187,7 @@ public partial class ReceiverTest
 
         var url = UpsertReceiverUrl(Guid.NewGuid());
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -217,7 +217,7 @@ public partial class ReceiverTest
         var url = UpsertReceiverUrl(receiver.Id);
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertReceiverRequest()
+        var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -262,7 +262,7 @@ public partial class ReceiverTest
 
         var url = UpsertReceiverUrl(Guid.NewGuid());
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,

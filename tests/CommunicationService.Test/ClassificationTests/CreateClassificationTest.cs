@@ -11,7 +11,7 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewClassificationUrl() => $"/ClassificationCreate";
+    private string CreateClassificationUrl() => $"/Classification";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
@@ -22,18 +22,18 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        
+        var url = CreateClassificationUrl();
         dbContext.AddMetadataType(metadataTypeName);
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateClassificationRequest(
+        var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                  MetadataTypes:new[] { metadataTypeName })
             .AsJsonStringContent();
 
         // act
-        var response = await client.PostAsync(CreateNewClassificationUrl(), body);
+        var response = await client.PostAsync(url, body);
         var stringContent = await response.Content.ReadAsStringAsync();
         
         // assert
@@ -57,13 +57,13 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateClassificationRequest(
+        var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes: Array.Empty<string>())
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateNewClassificationUrl(), body);
+        var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -77,13 +77,13 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateClassificationRequest(
+        var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes:new[] { metadataTypeName })
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateNewClassificationUrl(), body);
+        var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -101,13 +101,13 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateClassificationRequest(
+        var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes: Array.Empty<string>())
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateNewClassificationUrl(), body);
+        var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);

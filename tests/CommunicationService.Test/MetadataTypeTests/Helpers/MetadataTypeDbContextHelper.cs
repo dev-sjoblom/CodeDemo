@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Data;
+using CommunicationService.MetadataTypes.DataStore;
 using CommunicationService.Test.ClassificationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
 

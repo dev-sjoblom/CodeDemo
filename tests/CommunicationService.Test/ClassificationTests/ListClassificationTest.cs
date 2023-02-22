@@ -6,7 +6,7 @@ namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string ListClassificationUrl() => "/ClassificationList";
+    private string ListClassificationUrl() => "/Classification";
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
     public async Task ListClassification_WithData_ReturnsList(string classificationName, string metadataName)
@@ -27,7 +27,7 @@ public partial class ClassificationTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<ClassificationResponse[]>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<ClassificationResponseItem[]>(jsonResponse)!;
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);
         responseObject[0].Name.Should().Be(classificationName);

@@ -4,7 +4,7 @@ namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string DeleteClassificationByIdUrl(Guid id) => $"/ClassificationDelete/{id}";
+    private string DeleteClassificationByIdUrl(Guid id) => $"/Classification/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]

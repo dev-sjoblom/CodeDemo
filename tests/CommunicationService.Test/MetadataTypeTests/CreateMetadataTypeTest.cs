@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.Test.MetadataTypeTests.Model;
 using CommunicationService.Test.ClassificationTests.Helpers;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
 
@@ -13,7 +13,7 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         Fixture = fixture;
     }
 
-    private string CreateNewMetadataUrl() => $"/MetadataTypeCreate";
+    private string CreateNewMetadataUrl() => $"/MetadataType";
 
     [Theory]
     [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
@@ -30,7 +30,7 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateMetadataTypeRequest(
+        var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataType,
                 Classifications: new[] { classificationName })
             .AsJsonStringContent();
@@ -60,7 +60,7 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateMetadataTypeRequest(
+        var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataTypeName,
                 Classifications: Array.Empty<string>())
             .AsJsonStringContent();
@@ -81,7 +81,7 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateMetadataTypeRequest(
+        var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataTypeName,
                 Classifications: new[] { classificationName })
             .AsJsonStringContent();

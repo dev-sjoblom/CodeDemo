@@ -1,6 +1,6 @@
-using CommunicationService.Classifications.Data;
-using CommunicationService.MetadataTypes.Data;
-using CommunicationService.Receivers.Data;
+using CommunicationService.Classifications.DataStore;
+using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.Receivers.DataStore;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 

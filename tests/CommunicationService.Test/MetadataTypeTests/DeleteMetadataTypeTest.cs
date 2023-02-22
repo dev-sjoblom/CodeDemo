@@ -2,7 +2,7 @@ namespace CommunicationService.Test.MetadataTypeTests;
  
 public partial class MetadataTypeTests
 {
-    private string DeleteMetadataTypeByIdUrl(Guid id) => $"/MetadataTypeDelete/{id}";
+    private string DeleteMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]

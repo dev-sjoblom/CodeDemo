@@ -15,7 +15,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
     private string CreateNewReceiverUrl()
     {
-        return $"/ReceiverCreate";
+        return $"/Receiver";
     }
 
     [Theory]
@@ -37,7 +37,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
 
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -75,7 +75,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -101,7 +101,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -130,7 +130,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
@@ -158,7 +158,7 @@ public partial class ReceiverTest : IClassFixture<ReceiverFixture>
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new CreateReceiverRequest()
+        var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
             Email = email,
