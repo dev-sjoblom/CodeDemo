@@ -1,4 +1,4 @@
-using CommunicationService.Classifications.Data;
+using CommunicationService.Classifications.DataStore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunicationService.Test.ClassificationTests.Helpers;

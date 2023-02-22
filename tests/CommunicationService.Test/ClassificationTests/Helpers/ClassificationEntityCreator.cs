@@ -1,5 +1,5 @@
-using CommunicationService.Classifications.Data;
-using CommunicationService.MetadataTypes.Data;
+using CommunicationService.Classifications.DataStore;
+using CommunicationService.MetadataTypes.DataStore;
 
 namespace CommunicationService.Test.ClassificationTests.Helpers;
 

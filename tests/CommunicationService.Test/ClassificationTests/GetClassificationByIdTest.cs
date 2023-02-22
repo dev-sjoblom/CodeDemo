@@ -6,7 +6,7 @@ namespace CommunicationService.Test.ClassificationTests;
 
 public partial class ClassificationTests
 {
-    private string GetClassificationByIdUrl(Guid id) => $"ClassificationGetById/{id}";
+    private string GetClassificationByIdUrl(Guid id) => $"/Classification/{id}";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
@@ -29,7 +29,7 @@ public partial class ClassificationTests
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<ClassificationResponse>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<ClassificationResponseItem>(jsonResponse)!;
         responseObject.Should().NotBeNull();
         responseObject.Name.Should().Be(classificationName);
         responseObject.MetadataTypes.Length.Should().Be(1);

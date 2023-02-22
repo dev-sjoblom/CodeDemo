@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace CommunicationService.Fundamental.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public abstract class ApiController : ControllerBase
 {
     protected ILogger Logger { get; }

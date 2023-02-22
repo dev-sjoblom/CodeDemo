@@ -7,7 +7,7 @@ namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataTypeUpsert/{id}";
+    private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataType/{id}";
 
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
@@ -21,7 +21,7 @@ public partial class MetadataTypeTests
         await dbContext.SaveChangesAsync();
 
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertMetadataTypeRequest(
+        var body = new UpsertMetadataTypeRequestParameters(
                 Name: metadataTypeName, 
                 Classifications:new[] { classificationName })
             .AsJsonStringContent();
@@ -33,7 +33,7 @@ public partial class MetadataTypeTests
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
         
-        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponse>(stringContent)!;
+        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem>(stringContent)!;
         responseObject.Should().NotBeNull();
         responseObject.Name.Should().Be(metadataTypeName);
         responseObject.Classifications.Length.Should().Be(1);
@@ -53,7 +53,7 @@ public partial class MetadataTypeTests
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertMetadataTypeRequest(
+        var body = new UpsertMetadataTypeRequestParameters(
                 Name: metadataTypeName, 
                 Classifications:new[] { classificationName })
             .AsJsonStringContent();
@@ -84,7 +84,7 @@ public partial class MetadataTypeTests
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
-        var body = new UpsertMetadataTypeRequest(
+        var body = new UpsertMetadataTypeRequestParameters(
                 Name: metadataTypeName, 
                 Classifications: Array.Empty<string>())
             .AsJsonStringContent();

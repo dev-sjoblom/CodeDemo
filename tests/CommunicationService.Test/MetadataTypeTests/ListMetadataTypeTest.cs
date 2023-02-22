@@ -1,12 +1,12 @@
-using CommunicationService.MetadataTypes.Api.Model;
 using CommunicationService.Test.MetadataTypeTests.Helpers;
+using CommunicationService.Test.MetadataTypeTests.Model;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string ListMetadataType() => "/MetadataTypeList";
+    private string GetMetadataType() => "/MetadataType";
     [Theory]
     [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
     public async Task ListMetadataTypes_WithData_ReturnsList(string metadataTypeName, string classification)
@@ -21,13 +21,13 @@ public partial class MetadataTypeTests
         var client = Fixture.GetMockedClient(dbContext);
     
         // Act
-        var response = await client.GetAsync(ListMetadataType());
+        var response = await client.GetAsync(GetMetadataType());
         var jsonResponse = await response.Content.ReadAsStringAsync();
     
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponse[]>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem[]>(jsonResponse)!;
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);
         responseObject[0].Name.Should().Be(metadataTypeName);

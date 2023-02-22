@@ -1,11 +1,11 @@
-using CommunicationService.MetadataTypes.Api.Model;
+using CommunicationService.Test.MetadataTypeTests.Model;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
 public partial class MetadataTypeTests
 {
-    private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataTypeGetById/{id}";
+    private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
     
     [Theory]
     [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
@@ -28,7 +28,7 @@ public partial class MetadataTypeTests
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponse>(jsonResponse)!;
+        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem>(jsonResponse)!;
         responseObject.Should().NotBeNull();
         responseObject.Name.Should().Be(metadataTypeName);
         responseObject.Classifications.Length.Should().Be(1);

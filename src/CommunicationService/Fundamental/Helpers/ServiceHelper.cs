@@ -1,6 +1,9 @@
+using System.Reflection;
 using CommunicationService.Fundamental.Behaviors;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 namespace CommunicationService.Fundamental.Helpers;
@@ -25,8 +28,8 @@ public static class ServiceHelper
         services.AddControllers();
         services.AddMediatR(option =>
             option.RegisterServicesFromAssembly(typeof(Program).Assembly));
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+
+        services.AddOpenApi();
 
         var app = builder.Build();
 
@@ -54,13 +57,5 @@ public static class ServiceHelper
         return app;
     }
 
-    private static IConfigurationRoot CreateConfiguration()
-    {
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", false)
-            .AddJsonFile("appsettings.Development.json", true)
-            .Build();
-
-        return config;
-    }
+   
 }
