@@ -1,6 +1,7 @@
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.Fundamental.Helpers;
+using CommunicationService.Test.MetadataTypeTests.Fundamental;
 using CommunicationService.Test.MetadataTypeTests.Model;
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.MetadataTypeTests.Helpers;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
@@ -16,10 +17,11 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
     private string CreateNewMetadataUrl() => $"/MetadataType";
 
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
-    [InlineAutoMoq(ValidShortestMetadataTypeName, ValidShortestClassificationName)]
-    [InlineAutoMoq(ValidLongestMetadataTypeName, ValidLongestClassificationName)]
-    public async Task CreateNewMetadata_WithCorrectName_ShouldStoreDataAndReturnCreated(string metadataType,
+    [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
+    [PopulateArguments(ValidShortestMetadataTypeName, ValidShortestClassificationName)]
+    [PopulateArguments(ValidLongestMetadataTypeName, ValidLongestClassificationName)]
+    public async Task CreateNewMetadata_WithCorrectName_ShouldStoreDataAndReturnCreated(
+        string metadataTypeName,
         string classificationName)
     {
         // arr
@@ -31,17 +33,18 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         
         var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateMetadataTypeRequestParameters(
-                Name: metadataType,
+                Name: metadataTypeName,
                 Classifications: new[] { classificationName })
             .AsJsonStringContent();
 
         // act
         var response = await client.PostAsync(CreateNewMetadataUrl(), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
-
+        var responseObject = await ValidateMetadataResponse(response, HttpStatusCode.Created);
+        responseObject.Name.Should().Be(metadataTypeName);
+        responseObject.Classifications.Should().Contain(classificationName);
+        
         var storedClassification = dbContext.Classification.FirstOrDefault(x => x.Name == classificationName);
         storedClassification.Should().NotBeNull();
 
@@ -50,10 +53,10 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
     }
 
     [Theory]
-    [InlineAutoMoq("a")]
-    [InlineAutoMoq("a a")]
-    [InlineAutoMoq($"{ValidMetadataTypeName}&")]
-    [InlineAutoMoq($"{ValidLongestMetadataTypeName}a")]
+    [PopulateArguments("a")]
+    [PopulateArguments("a a")]
+    [PopulateArguments($"{ValidMetadataTypeName}&")]
+    [PopulateArguments($"{ValidLongestMetadataTypeName}a")]
     public async Task CreateNewMetadataType_WithIncorrectName_ReturnsBadRequest(string metadataTypeName)
     {
         // arr
@@ -69,11 +72,13 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         var response = await client.PostAsync(CreateNewMetadataUrl(), body);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.BadRequest,
+             ValidationProblemTitle);
     }
 
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
+    [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task CreateNewMetadataType_WithNonExistingClassification_ReturnsNotFound(string metadataTypeName,
         string classificationName)
     {
@@ -90,6 +95,8 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         var response = await client.PostAsync(CreateNewMetadataUrl(), body);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.NotFound, 
+            WasNotFoundTitle(ClassificationEntityName));
     }
 }

@@ -1,9 +1,8 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.GetByName;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(MetadataTypeResponse), StatusCodes.Status200OK)]
@@ -28,15 +27,16 @@ public class GetMetadataTypeByNameController : MetadataTypeBase
     [HttpGet("{name}")]
     public async Task<IActionResult> GetMetadataTypeByName(string name, CancellationToken cancellationToken)
     {
-        var command = new GetMetadataTypeByNameQuery()
-        {
-            Name = name
-        };
-        
+        var command = CreateGetMetadataTypeByNameQuery(name);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             item => Ok(item.ToMetadataTypeResponse()),
             Problem);
     }
+
+    private static GetMetadataTypeByNameQuery CreateGetMetadataTypeByNameQuery(string name) => new()
+    {
+        Name = name
+    };
 }

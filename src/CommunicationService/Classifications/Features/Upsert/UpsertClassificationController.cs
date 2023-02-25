@@ -1,10 +1,8 @@
 using CommunicationService.Classifications.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.Classifications.Features.Upsert;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ClassificationResponse), StatusCodes.Status201Created)]
@@ -39,13 +37,7 @@ public class UpsertClassificationController : ClassificationBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var command = new UpsertClassificationCommand()
-        {
-            Id = id,
-            Name = request.Name,
-            MetadataTypes = request.MetadataTypes
-        };
-        
+        var command = CreateUpsertClassificationCommand(id, request);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(item => item.RegisteredAsNewItem
@@ -53,4 +45,12 @@ public class UpsertClassificationController : ClassificationBase
                 : NoContent(),
             Problem);
     }
+
+    private static UpsertClassificationCommand CreateUpsertClassificationCommand(Guid id,
+        UpsertClassificationRequest request) => new()
+    {
+        Id = id,
+        Name = request.Name,
+        MetadataTypes = request.MetadataTypes
+    };
 }

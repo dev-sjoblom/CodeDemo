@@ -1,4 +1,4 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
+using CommunicationService.Test.ClassificationTests.Fundamental;
 
 namespace CommunicationService.Test.ClassificationTests;
 
@@ -7,7 +7,7 @@ public partial class ClassificationTests
     private string DeleteClassificationByIdUrl(Guid id) => $"/Classification/{id}";
 
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task DeleteClassificationById_WithCorrectId_ReturnNoContent(string classificationName,
         string metadataTypeName)
     {
@@ -26,7 +26,7 @@ public partial class ClassificationTests
         var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent, stringContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
 
         var removedClassification = dbContext.Classification.FirstOrDefault(x => x.Id == classification.Id);
         removedClassification.Should().BeNull();
@@ -46,6 +46,8 @@ public partial class ClassificationTests
         var response = await client.DeleteAsync(url);
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.NotFound, 
+            WasNotFoundTitle(ClassificationEntityName));
     }
 }

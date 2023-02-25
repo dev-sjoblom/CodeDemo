@@ -1,9 +1,9 @@
 using CommunicationService.Classifications.Features.GetByName;
+using CommunicationService.Fundamental.DataAccess;
 using CommunicationService.MetadataTypes.Features.GetByName;
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Receivers.DataAccess;
 using CommunicationService.Receivers.Features.GetById;
 using CommunicationService.Receivers.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.Upsert;
 
@@ -95,7 +95,7 @@ public class UpsertReceiverHandler : IRequestHandler<UpsertReceiverCommand, Erro
                 return metadataType.Errors;
 
             if (!metadataType.Value.Classifications.Any(x => receiver.Classifications.Any(p => x.Id == p.Id)))
-                return ReceiverCommandErrors.MetadataTypeNotAllowed;
+                return ReceiverErrors.MetadataTypeNotAllowed;
 
             var metadata = new ReceiverMetadata()
             {
@@ -117,9 +117,9 @@ public class UpsertReceiverHandler : IRequestHandler<UpsertReceiverCommand, Erro
                 Receiver = receiver
             };
         }
-        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(ReceiverIndex.IxReceiverName))
+        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(ReceiverConstants.IxReceiverName))
         {
-            return ReceiverCommandErrors.NameAlreadyExists;
+            return ReceiverErrors.NameAlreadyExists;
         }
     }
 }

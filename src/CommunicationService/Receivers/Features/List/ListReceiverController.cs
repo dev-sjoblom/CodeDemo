@@ -1,7 +1,6 @@
 using CommunicationService.Receivers.Fundamental;
-using MediatR;
 
-namespace CommunicationService.Receivers.Features.Get;
+namespace CommunicationService.Receivers.Features.List;
 
 [Route( Route )]
 [ApiExplorerSettings(GroupName = GroupNaming)]
@@ -26,8 +25,9 @@ public class ListReceiverController : ReceiverBase
     [HttpGet]
     public async Task<IActionResult> ListReceivers(CancellationToken cancellationToken)
     {
+        var command = new ListReceiversQuery(); 
         var result = await Mediator.Send(
-            new ListReceiversQuery(),
+            command,
             cancellationToken);
 
         return result.Match(

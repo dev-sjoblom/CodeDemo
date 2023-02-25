@@ -1,5 +1,5 @@
+using CommunicationService.Fundamental.DataAccess;
 using CommunicationService.MetadataTypes.Features.GetById;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Delete;
 

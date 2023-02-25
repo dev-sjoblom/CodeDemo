@@ -1,4 +1,4 @@
-using FluentValidation;
+using CommunicationService.Receivers.DataAccess;
 
 namespace CommunicationService.Receivers.Features.Create;
 

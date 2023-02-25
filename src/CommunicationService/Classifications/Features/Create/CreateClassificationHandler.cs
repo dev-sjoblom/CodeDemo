@@ -1,8 +1,8 @@
-using CommunicationService.Classifications.DataStore;
+using CommunicationService.Classifications.DataAccess;
 using CommunicationService.Classifications.Features.GetByName;
 using CommunicationService.Classifications.Features.Upsert;
 using CommunicationService.Classifications.Fundamental;
-using MediatR;
+using CommunicationService.Fundamental.DataAccess;
 
 namespace CommunicationService.Classifications.Features.Create;
 
@@ -36,8 +36,8 @@ public class CreateClassificationHandler : IRequestHandler<CreateClassificationC
         var existingResult = await Mediator.Send(checkExistingCommand, cancellationToken);
 
         if (!existingResult.IsError)
-            return ClassificationCommandErrors.NameAlreadyExists;
-        if (existingResult.FirstError != ClassificationQueryErrors.NotFound)
+            return ClassificationErrors.NameAlreadyExists;
+        if (existingResult.FirstError != ClassificationErrors.NotFound)
             return existingResult.Errors;
 
         var upsertCommand = new UpsertClassificationCommand()

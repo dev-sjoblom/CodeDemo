@@ -1,7 +1,7 @@
-using CommunicationService.MetadataTypes.DataStore;
-using MediatR;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.MetadataTypes.DataAccess;
 
-namespace CommunicationService.MetadataTypes.Features.Get;
+namespace CommunicationService.MetadataTypes.Features.List;
 
 public class ListMetadataTypesHandler : IRequestHandler<ListMetadataTypesQuery, ErrorOr<IEnumerable<MetadataType>>>
 {

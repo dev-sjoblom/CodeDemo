@@ -1,5 +1,5 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.ClassificationTests.Model;
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.ClassificationTests.Response;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ClassificationTests;
@@ -7,27 +7,28 @@ namespace CommunicationService.Test.ClassificationTests;
 public partial class ClassificationTests
 {
     private string ListClassificationUrl() => "/Classification";
+
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task ListClassification_WithData_ReturnsList(string classificationName, string metadataName)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        
+
         dbContext.AddClassificationWithMetadata(classificationName, metadataName);
         await dbContext.SaveChangesAsync();
-        
+        var url = ListClassificationUrl();
         var client = Fixture.GetMockedClient(dbContext);
-    
-        // Act
-        var response = await client.GetAsync(ListClassificationUrl());
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-    
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var responseObject = JsonConvert.DeserializeObject<ClassificationResponseItem[]>(jsonResponse)!;
+        // Act
+        var response = await client.GetAsync(url);
+
+        // Assert
+        var responseContent = await ValidateResponse(response, HttpStatusCode.OK);
+        var responseObject = JsonConvert.DeserializeObject<ClassificationResponseItem[]>(
+            responseContent)!;
+
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);
         responseObject[0].Name.Should().Be(classificationName);

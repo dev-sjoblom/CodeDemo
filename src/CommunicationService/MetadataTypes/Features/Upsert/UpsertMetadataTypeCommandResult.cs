@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.MetadataTypes.DataAccess;
 
 namespace CommunicationService.MetadataTypes.Features.Upsert;
 

@@ -1,4 +1,4 @@
-using CommunicationService.Classifications.DataStore;
+using CommunicationService.Classifications.DataAccess;
 
 namespace CommunicationService.Classifications.Features.Upsert;
 

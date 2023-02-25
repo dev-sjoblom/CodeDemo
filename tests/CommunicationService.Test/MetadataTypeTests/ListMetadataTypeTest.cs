@@ -1,5 +1,4 @@
-using CommunicationService.Test.MetadataTypeTests.Helpers;
-using CommunicationService.Test.MetadataTypeTests.Model;
+using CommunicationService.Test.MetadataTypeTests.Response;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.MetadataTypeTests;
@@ -8,7 +7,7 @@ public partial class MetadataTypeTests
 {
     private string GetMetadataType() => "/MetadataType";
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
+    [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task ListMetadataTypes_WithData_ReturnsList(string metadataTypeName, string classification)
     {
         // arr
@@ -22,12 +21,10 @@ public partial class MetadataTypeTests
     
         // Act
         var response = await client.GetAsync(GetMetadataType());
-        var jsonResponse = await response.Content.ReadAsStringAsync();
     
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem[]>(jsonResponse)!;
+        var responseContent = await ValidateResponse(response, HttpStatusCode.OK);
+        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem[]>(responseContent)!;
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);
         responseObject[0].Name.Should().Be(metadataTypeName);

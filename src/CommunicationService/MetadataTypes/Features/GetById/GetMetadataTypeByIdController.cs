@@ -1,10 +1,8 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
-using Microsoft.AspNetCore.Routing.Template;
 
 namespace CommunicationService.MetadataTypes.Features.GetById;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(MetadataTypeResponse), StatusCodes.Status200OK)]
@@ -28,15 +26,16 @@ public class GetMetadataTypeByIdController : MetadataTypeBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMetadataTypeById(Guid id, CancellationToken cancellationToken)
     {
-        var command = new GetMetadataTypeByIdQuery()
-        {
-            Id = id
-        };
-        
+        var command = CreateGetMetadataTypeByIdQuery(id);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             item => Ok(item.ToMetadataTypeResponse()),
             Problem);
     }
+
+    private static GetMetadataTypeByIdQuery CreateGetMetadataTypeByIdQuery(Guid id) => new()
+    {
+        Id = id
+    };
 }

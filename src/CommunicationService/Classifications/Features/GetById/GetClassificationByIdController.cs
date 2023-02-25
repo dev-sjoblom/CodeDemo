@@ -1,9 +1,8 @@
 using CommunicationService.Classifications.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Classifications.Features.GetById;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ClassificationResponse), StatusCodes.Status200OK)]
@@ -27,15 +26,16 @@ public class GetClassificationByIdController : ClassificationBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetClassificationById(Guid id, CancellationToken cancellationToken)
     {
-        var command = new GetClassificationByIdQuery()
-        {
-            Id = id
-        };
-        
+        var command = CreateGetClassificationByIdQuery(id);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             item => Ok(item.ToClassificationResponse()),
             Problem);
     }
+
+    private static GetClassificationByIdQuery CreateGetClassificationByIdQuery(Guid id) => new()
+    {
+        Id = id
+    };
 }

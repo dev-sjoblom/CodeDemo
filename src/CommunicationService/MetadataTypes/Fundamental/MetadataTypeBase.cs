@@ -1,12 +1,11 @@
-using CommunicationService.Fundamental.Controllers;
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.MetadataTypes.DataAccess;
 
 namespace CommunicationService.MetadataTypes.Fundamental;
 
 public class MetadataTypeBase : ApiController
 {
-    public const string Route = "MetadataType";
-    public const string GroupNaming = "MetadataType's";
+    protected const string Route = "MetadataType";
+    protected const string GroupNaming = "MetadataType's";
 
     private const string GetByIdController = "GetMetadataTypeById";
     private const string GetByIdControllerAction = "GetMetadataTypeById";

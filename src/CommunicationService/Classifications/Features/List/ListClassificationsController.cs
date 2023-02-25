@@ -1,7 +1,6 @@
 using CommunicationService.Classifications.Fundamental;
-using MediatR;
 
-namespace CommunicationService.Classifications.Features.Get;
+namespace CommunicationService.Classifications.Features.List;
 
 [Route( Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]

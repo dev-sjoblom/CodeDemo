@@ -1,5 +1,6 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.ClassificationTests.Model;
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.ClassificationTests.Requests;
+using CommunicationService.Test.Fundamental.Helpers;
 
 namespace CommunicationService.Test.ClassificationTests;
 
@@ -14,9 +15,9 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     private string CreateClassificationUrl() => $"/Classification";
     
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
-    [InlineAutoMoq(ValidShortestClassificationName, ValidShortestMetadataTypeName)]
-    [InlineAutoMoq(ValidLongestClassificationName, ValidLongestMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidShortestClassificationName, ValidShortestMetadataTypeName)]
+    [PopulateArguments(ValidLongestClassificationName, ValidLongestMetadataTypeName)]
     public async Task CreateNewClassification_WithCorrectName_ShouldStoreDataAndReturnCreated(string classificationName, string metadataTypeName)
     {
         // arr
@@ -34,10 +35,10 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
 
         // act
         var response = await client.PostAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
+        await ValidateClassificationResponse(response,
+            HttpStatusCode.Created);
         
         var storedClassification = dbContext.Classification.FirstOrDefault(x => x.Name == classificationName);
         storedClassification.Should().NotBeNull();
@@ -47,10 +48,10 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     }
 
     [Theory]
-    [InlineAutoMoq("a")]
-    [InlineAutoMoq("a a")]
-    [InlineAutoMoq($"{ValidClassificationName}&")]
-    [InlineAutoMoq($"{ValidLongestClassificationName}a")]
+    [PopulateArguments("a")]
+    [PopulateArguments("a a")]
+    [PopulateArguments($"{ValidClassificationName}&")]
+    [PopulateArguments($"{ValidLongestClassificationName}a")]
     public async Task CreateNewClassification_WithIncorrectName_ReturnsBadRequest(string classificationName)
     {
         // arr
@@ -66,11 +67,14 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.BadRequest, 
+            ValidationProblemTitle,
+            "Name");
     }
     
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task CreateNewClassification_WithNonExistingMetadataType_ReturnsNotFound(string classificationName, string metadataTypeName)
     {
         // arr
@@ -86,16 +90,17 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ValidateResponseProblem(response,
+            HttpStatusCode.NotFound,
+            WasNotFoundTitle(MetadataTypeEntityName));
     }
     
     [Theory]
-    [InlineAutoMoq(ValidClassificationName)]
+    [PopulateArguments(ValidClassificationName)]
     public async Task CreateNewClassification_WithNameTaken_ReturnsBadRequest(string classificationName)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
-        
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         dbContext.AddClassification(classificationName);
         await dbContext.SaveChangesAsync();
@@ -110,6 +115,8 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
         var response = await client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        await ValidateResponseProblem(response,
+            HttpStatusCode.Conflict,
+            "Classification name already taken.");
     }
 }

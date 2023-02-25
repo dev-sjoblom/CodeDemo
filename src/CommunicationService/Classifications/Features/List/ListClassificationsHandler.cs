@@ -1,7 +1,7 @@
-using CommunicationService.Classifications.DataStore;
-using MediatR;
+using CommunicationService.Classifications.DataAccess;
+using CommunicationService.Fundamental.DataAccess;
 
-namespace CommunicationService.Classifications.Features.Get;
+namespace CommunicationService.Classifications.Features.List;
 
 public class ListClassificationsHandler : IRequestHandler<ListClassificationsQuery, ErrorOr<IEnumerable<Classification>>>
 {

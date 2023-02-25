@@ -1,6 +1,6 @@
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Receivers.DataAccess;
 
-namespace CommunicationService.Test.ReceiversTests.Helpers;
+namespace CommunicationService.Test.ReceiversTests.Fundamental;
 
 public class ReceiverFixture : BaseFixture
 {

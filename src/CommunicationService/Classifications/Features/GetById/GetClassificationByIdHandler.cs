@@ -1,6 +1,6 @@
-using CommunicationService.Classifications.DataStore;
+using CommunicationService.Classifications.DataAccess;
 using CommunicationService.Classifications.Fundamental;
-using MediatR;
+using CommunicationService.Fundamental.DataAccess;
 
 namespace CommunicationService.Classifications.Features.GetById;
 
@@ -24,7 +24,7 @@ public class GetClassificationByIdHandler : IRequestHandler<GetClassificationByI
             .SingleOrDefaultAsync(cancellationToken);
 
         if (classification is null)
-            return ClassificationQueryErrors.NotFound;
+            return ClassificationErrors.NotFound;
         return classification;
     }
 }

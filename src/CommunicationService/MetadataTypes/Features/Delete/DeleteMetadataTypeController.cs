@@ -1,9 +1,8 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Delete;
 
-[Route( "MetadataType")]
+[Route("MetadataType")]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status201Created)]
@@ -28,13 +27,14 @@ public class DeleteMetadataTypeController : MetadataTypeBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteMetadataTypeById(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteMetadataTypeCommand()
-        {
-            Id = id
-        };
-        
+        var command = CreateDeleteMetadataTypeCommand(id);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(_ => NoContent(), Problem);
     }
+
+    private static DeleteMetadataTypeCommand CreateDeleteMetadataTypeCommand(Guid id) => new()
+    {
+        Id = id
+    };
 }

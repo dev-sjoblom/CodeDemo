@@ -5,7 +5,7 @@ public partial class MetadataTypeTests
     private string DeleteMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
 
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
+    [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task DeleteMetadataTypeById_WithCorrectId_ReturnNoContent(string metadataTypeName, string classificationName)
     {
         // arr
@@ -22,7 +22,7 @@ public partial class MetadataTypeTests
         var response = await client.DeleteAsync(url);
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
 
         var removedClassification = dbContext.Classification.FirstOrDefault(x => x.Id == classification.Id);
         removedClassification.Should().BeNull();
@@ -40,8 +40,10 @@ public partial class MetadataTypeTests
 
         // act
         var response = await client.DeleteAsync(url);
-
+        
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ValidateResponseProblem(response,
+            HttpStatusCode.NotFound,
+            WasNotFoundTitle(MetadataTypeEntityName));
     }
 }

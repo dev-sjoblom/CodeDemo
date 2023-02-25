@@ -1,4 +1,4 @@
-using CommunicationService.Test.ReceiversTests.Helpers;
+using CommunicationService.Test.ReceiversTests.Fundamental;
 
 namespace CommunicationService.Test.ReceiversTests;
 
@@ -7,14 +7,13 @@ public partial class ReceiverTest
     private string DeleteReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
-        "DATA")]
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
+        new[] { "Customer", "Partner" }, 
+        ValidMetadataTypeName, "DATA")]
     public async Task DeleteReceiverById_WithCorrectId_ReturnNoContent(
-        string uniqueName,
-        string email,
+        string uniqueName, string email,
         string[] classifications,
-        string metadataTypeName,
-        string metadataValue)
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -30,7 +29,7 @@ public partial class ReceiverTest
         var response = await client.DeleteAsync(url);
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
 
         var removedReceiver = dbContext.Receiver.FirstOrDefault(x => x.Id == receiver.Id);
         removedReceiver.Should().BeNull();
@@ -50,6 +49,8 @@ public partial class ReceiverTest
         var response = await client.DeleteAsync(url);
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.NotFound, 
+            WasNotFoundTitle(ReceiverEntityName));
     }
 }

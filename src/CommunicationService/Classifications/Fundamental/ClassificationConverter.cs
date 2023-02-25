@@ -1,4 +1,4 @@
-using CommunicationService.Classifications.DataStore;
+using CommunicationService.Classifications.DataAccess;
 using CommunicationService.Classifications.Features;
 
 namespace CommunicationService.Classifications.Fundamental;

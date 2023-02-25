@@ -1,4 +1,4 @@
-namespace CommunicationService.Test.Fundamental;
+namespace CommunicationService.Test.Fundamental.Database;
 
 public class AutoTestDbOptions
 {

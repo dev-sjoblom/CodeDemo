@@ -1,10 +1,8 @@
 using CommunicationService.Receivers.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.Upsert;
 
-[Route( Route )]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ReceiverResponse), StatusCodes.Status201Created)]
@@ -39,20 +37,20 @@ public class UpsertReceiverController : ReceiverBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var command = new UpsertReceiverCommand()
-        {
-            Id = id,
-            UniqueName = request.UniqueName,
-            Email = request.Email,
-            Classifications = request.Classifications,
-            Metadatas = request.Metadata
-        };
-        
+        var command = CreateUpsertReceiverCommand(id, request);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
-            onValue: item => item.RegisteredAsNewItem ? 
-                CreatedAtReceiver(item.Receiver) : NoContent(),
+            onValue: item => item.RegisteredAsNewItem ? CreatedAtReceiver(item.Receiver) : NoContent(),
             onError: Problem);
     }
+
+    private static UpsertReceiverCommand CreateUpsertReceiverCommand(Guid id, UpsertReceiverRequest request) => new()
+    {
+        Id = id,
+        UniqueName = request.UniqueName,
+        Email = request.Email,
+        Classifications = request.Classifications,
+        Metadatas = request.Metadata
+    };
 }

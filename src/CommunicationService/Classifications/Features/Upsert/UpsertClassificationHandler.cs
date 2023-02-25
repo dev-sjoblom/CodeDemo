@@ -1,8 +1,8 @@
-using CommunicationService.Classifications.DataStore;
+using CommunicationService.Classifications.DataAccess;
 using CommunicationService.Classifications.Features.GetById;
 using CommunicationService.Classifications.Fundamental;
+using CommunicationService.Fundamental.DataAccess;
 using CommunicationService.MetadataTypes.Features.GetByName;
-using MediatR;
 
 namespace CommunicationService.Classifications.Features.Upsert;
 
@@ -89,9 +89,9 @@ public class UpsertClassificationHandler : IRequestHandler<UpsertClassificationC
                 Classification = classification
             };
         }
-        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(ClassificationIndex.IxClassificationName))
+        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(ClassificationConstants.IxClassificationName))
         {
-            return ClassificationCommandErrors.NameAlreadyExists;
+            return ClassificationErrors.NameAlreadyExists;
         }
     }
 }

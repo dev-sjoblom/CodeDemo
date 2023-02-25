@@ -1,7 +1,6 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
-namespace CommunicationService.MetadataTypes.Features.Get;
+namespace CommunicationService.MetadataTypes.Features.List;
 
 [Route( Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
@@ -26,7 +25,6 @@ public class ListMetadataTypesController : MetadataTypeBase
     public async Task<IActionResult> ListMetadataTypes(CancellationToken cancellationToken)
     {
         var command = new ListMetadataTypesQuery();
-        
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(

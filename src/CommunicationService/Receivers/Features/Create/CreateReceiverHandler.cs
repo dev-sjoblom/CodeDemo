@@ -1,8 +1,8 @@
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.Receivers.DataAccess;
 using CommunicationService.Receivers.Features.GetByName;
 using CommunicationService.Receivers.Features.Upsert;
 using CommunicationService.Receivers.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.Create;
 
@@ -35,8 +35,8 @@ public class CreateReceiverHandler : IRequestHandler<CreateReceiverCommand, Erro
             cancellationToken);
 
         if (!existingResult.IsError)
-            return ReceiverCommandErrors.NameAlreadyExists;
-        if (existingResult.FirstError != ReceiverQueryErrors.NotFound)
+            return ReceiverErrors.NameAlreadyExists;
+        if (existingResult.FirstError != ReceiverErrors.NotFound)
             return existingResult.Errors;
 
         var upsertCommand = new UpsertReceiverCommand()

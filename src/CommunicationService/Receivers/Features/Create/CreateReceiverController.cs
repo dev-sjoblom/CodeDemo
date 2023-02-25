@@ -1,10 +1,8 @@
 using CommunicationService.Receivers.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.Create;
 
-[Route( Route )]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ReceiverResponse), StatusCodes.Status201Created)]
@@ -37,18 +35,19 @@ public class CreateReceiverController : ReceiverBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var command = new CreateReceiverCommand()
-        {
-            UniqueName = request.UniqueName,
-            Email = request.Email,
-            Classifications = request.Classifications,
-            Metadatas = request.Metadata
-        };
-        
+        var command = CreateCreateReceiverCommand(request);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             CreatedAtReceiver,
             Problem);
     }
+
+    private static CreateReceiverCommand CreateCreateReceiverCommand(CreateReceiverRequest request) => new()
+    {
+        UniqueName = request.UniqueName,
+        Email = request.Email,
+        Classifications = request.Classifications,
+        Metadatas = request.Metadata
+    };
 }

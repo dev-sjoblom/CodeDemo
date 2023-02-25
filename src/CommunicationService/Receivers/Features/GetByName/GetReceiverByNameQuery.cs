@@ -1,5 +1,4 @@
-using CommunicationService.Receivers.DataStore;
-using MediatR;
+using CommunicationService.Receivers.DataAccess;
 
 namespace CommunicationService.Receivers.Features.GetByName;
 

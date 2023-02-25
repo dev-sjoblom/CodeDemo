@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace CommunicationService.Classifications.Features.Delete;
 
 public class DeleteClassificationCommand : IRequest<ErrorOr<Deleted>>

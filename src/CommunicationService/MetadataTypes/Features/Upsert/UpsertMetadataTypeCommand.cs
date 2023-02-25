@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace CommunicationService.MetadataTypes.Features.Upsert;
 
 public class UpsertMetadataTypeCommand : IRequest<ErrorOr<UpsertMetadataTypeCommandResult>>

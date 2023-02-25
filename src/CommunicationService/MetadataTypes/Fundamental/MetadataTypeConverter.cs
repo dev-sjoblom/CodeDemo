@@ -1,4 +1,4 @@
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.MetadataTypes.DataAccess;
 using CommunicationService.MetadataTypes.Features;
 
 namespace CommunicationService.MetadataTypes.Fundamental;
