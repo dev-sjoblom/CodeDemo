@@ -14,7 +14,7 @@ public class Program
 
         try
         {
-            var app = ServiceHelper.CreateWebApplication(args);
+            var app = ServiceSetupHelper.CreateAndConfigureWebApplication(args);
 
             app.Run();
         }

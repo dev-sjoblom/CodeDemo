@@ -1,4 +1,4 @@
-using FluentValidation;
+using CommunicationService.MetadataTypes.DataAccess;
 
 namespace CommunicationService.MetadataTypes.Features.Create;
 

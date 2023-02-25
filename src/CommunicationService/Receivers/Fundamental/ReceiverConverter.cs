@@ -1,4 +1,4 @@
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Receivers.DataAccess;
 using CommunicationService.Receivers.Features;
 
 namespace CommunicationService.Receivers.Fundamental;

@@ -1,5 +1,4 @@
 using CommunicationService.Classifications.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Classifications.Features.Delete;
 
@@ -27,13 +26,14 @@ public class DeleteClassificationController : ClassificationBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteClassificationById(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteClassificationCommand()
-        {
-            Id = id
-        };
-        
+        var command = CreateDeleteClassificationCommand(id);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(_ => NoContent(), Problem);
     }
+
+    private static DeleteClassificationCommand CreateDeleteClassificationCommand(Guid id) => new()
+    {
+        Id = id
+    };
 }

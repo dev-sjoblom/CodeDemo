@@ -1,4 +1,4 @@
-using FluentValidation;
+using CommunicationService.Classifications.DataAccess;
 
 namespace CommunicationService.Classifications.Features.Create;
 

@@ -1,6 +1,6 @@
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.Receivers.DataAccess;
 using CommunicationService.Receivers.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.GetById;
 
@@ -25,7 +25,7 @@ public class GetReceiverByIdHandler : IRequestHandler<GetReceiverByIdQuery, Erro
             .FirstOrDefaultAsync(cancellationToken);
 
         if (receiver is null)
-            return ReceiverQueryErrors.NotFound;
+            return ReceiverErrors.NotFound;
         return receiver;
     }
 }

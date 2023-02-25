@@ -1,9 +1,8 @@
 using CommunicationService.Receivers.Fundamental;
-using MediatR;
 
 namespace CommunicationService.Receivers.Features.Delete;
 
-[Route( Route )]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(StatusCodes.Status201Created)]
@@ -28,15 +27,17 @@ public class DeleteReceiverController : ReceiverBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteReceiver(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteReceiverCommand()
-        {
-            Id = id
-        };
-        
+        var command = CreateDeleteReceiverCommand(id);
+
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             _ => NoContent(),
             Problem);
     }
+
+    private static DeleteReceiverCommand CreateDeleteReceiverCommand(Guid id) => new()
+    {
+        Id = id
+    };
 }

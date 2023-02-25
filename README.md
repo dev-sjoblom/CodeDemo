@@ -39,8 +39,8 @@ Version: Draft 1 (Work in progress)
 - [Entity Framework Core](https://github.com/dotnet/efcore) -
 - [Npgsql Entity Framework](https://github.com/npgsql/efcore.pg) - Npgsql Entity Framework Core provider for PostgreSQL
 - [ErrorOr](URLhttps://github.com/amantinband/error-or)
-- [Serilog](https://github.com/serilog/serilog)
 - [MediatR](https://github.com/jbogard/MediatR)
+- [Serilog](https://github.com/serilog/serilog)
 
 ## Testing
 
@@ -55,9 +55,7 @@ Version: Draft 1 (Work in progress)
 - [Serilog - logging](https://github.com/serilog/serilog)
 - [Fluent Docker](https://github.com/mariotoffia/FluentDocker/)
 - Security: Key or username/password?
-- Reactoring: Hide boilerplate code
-- Validation
-- ~~Null Guards~~
+- Refactoring: Hide boilerplate
 - Secrets
 - OpenTelemetry
 
@@ -66,5 +64,5 @@ Version: Draft 1 (Work in progress)
 - [Marten - postgre as document db / event sourcing](https://github.com/JasperFx/marten)
 - [rabbit mq - message broker](https://www.rabbitmq.com/)  Pub Sub ?
 - [Bogus](https://github.com/bchavez/Bogus) Test/Demo data generator
-- Dto Mapper?
-- Integration testing
+- Dto mapper?
+- Unit testing

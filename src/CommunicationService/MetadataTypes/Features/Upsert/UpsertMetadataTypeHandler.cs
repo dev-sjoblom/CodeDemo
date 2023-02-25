@@ -1,8 +1,8 @@
 using CommunicationService.Classifications.Features.GetByName;
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.MetadataTypes.DataAccess;
 using CommunicationService.MetadataTypes.Features.GetById;
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Upsert;
 
@@ -87,9 +87,9 @@ public class UpsertMetadataTypeHandler : IRequestHandler<UpsertMetadataTypeComma
                 MetadataType = metadataType
             };
         }
-        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(MetadataTypeIndex.IxMetadataTypeName))
+        catch (DbUpdateException updateException) when (updateException.IsDatabaseIndexException(MetadataTypeConstants.IxMetadataTypeName))
         {
-            return MetadataTypeCommandErrors.NameAlreadyExists;
+            return MetadataTypeErrors.NameAlreadyExists;
         }
     }
 }

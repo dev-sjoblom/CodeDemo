@@ -1,10 +1,8 @@
 using CommunicationService.Classifications.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.Classifications.Features.Create;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ClassificationResponse), StatusCodes.Status201Created)]
@@ -36,16 +34,17 @@ public class CreateClassificationController : ClassificationBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var command = new CreateClassificationCommand()
-        {
-            Name = request.Name,
-            MetadataTypes = request.MetadataTypes
-        };
-        
+        var command = CreateClassificationCommand(request);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             CreatedAtClassification,
             Problem);
     }
+
+    private static CreateClassificationCommand CreateClassificationCommand(CreateClassificationRequest request) => new()
+    {
+        Name = request.Name,
+        MetadataTypes = request.MetadataTypes
+    };
 }

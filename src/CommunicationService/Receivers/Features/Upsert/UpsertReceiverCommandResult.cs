@@ -1,4 +1,4 @@
-using CommunicationService.Receivers.DataStore;
+using CommunicationService.Receivers.DataAccess;
 
 namespace CommunicationService.Receivers.Features.Upsert;
 

@@ -1,8 +1,9 @@
-using CommunicationService.MetadataTypes.DataStore;
-using CommunicationService.Test.ClassificationTests.Helpers;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.MetadataTypes.DataAccess;
+using CommunicationService.Test.ClassificationTests.Fundamental;
 using Microsoft.EntityFrameworkCore;
 
-namespace CommunicationService.Test.MetadataTypeTests.Helpers;
+namespace CommunicationService.Test.MetadataTypeTests.Fundamental;
 
 public static class MetadataTypeDbContextHelper
 {

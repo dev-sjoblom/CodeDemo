@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace CommunicationService.Classifications.Features.Upsert;
 
 public class UpsertClassificationCommand : IRequest<ErrorOr<UpsertClassificationCommandResult>>

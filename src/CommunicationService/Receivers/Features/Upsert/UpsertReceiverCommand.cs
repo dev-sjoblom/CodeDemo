@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace CommunicationService.Receivers.Features.Upsert;
 
 public class UpsertReceiverCommand : IRequest<ErrorOr<UpsertReceiverCommandResult>>

@@ -1,6 +1,6 @@
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.MetadataTypes.DataAccess;
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.GetById;
 
@@ -24,7 +24,7 @@ public class GetMetadataTypeByIdHandler : IRequestHandler<GetMetadataTypeByIdQue
             .SingleOrDefaultAsync(cancellationToken);
 
         if (metadataType is null)
-            return MetadataTypeQueryErrors.NotFound;
+            return MetadataTypeErrors.NotFound;
         return metadataType;
     }
 }

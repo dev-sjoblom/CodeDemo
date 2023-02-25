@@ -1,7 +1,6 @@
-using CommunicationService.Receivers.DataStore;
-using MediatR;
+using CommunicationService.Receivers.DataAccess;
 
-namespace CommunicationService.Receivers.Features.Get;
+namespace CommunicationService.Receivers.Features.List;
 
 public class ListReceiversQuery : IRequest<ErrorOr<IEnumerable<Receiver>>>
 {

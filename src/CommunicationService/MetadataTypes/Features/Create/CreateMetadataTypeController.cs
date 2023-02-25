@@ -1,6 +1,4 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Create;
 
@@ -38,16 +36,17 @@ public class CreateMetadataTypeController : MetadataTypeBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var commands = new CreateMetadataTypeCommand()
-        {
-            Name = request.Name,
-            Classifications = request.Classifications
-        };
-        
-        var result = await Mediator.Send(commands, cancellationToken);
+        var command = CreateCreateMetadataTypeCommand(request);
+        var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             CreatedAtMetadataType,
             Problem);
     }
+
+    private static CreateMetadataTypeCommand CreateCreateMetadataTypeCommand(CreateMetadataTypeRequest request) => new()
+    {
+        Name = request.Name,
+        Classifications = request.Classifications
+    };
 }

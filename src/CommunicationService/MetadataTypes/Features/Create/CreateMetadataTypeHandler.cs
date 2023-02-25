@@ -1,8 +1,8 @@
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.MetadataTypes.DataAccess;
 using CommunicationService.MetadataTypes.Features.GetByName;
 using CommunicationService.MetadataTypes.Features.Upsert;
 using CommunicationService.MetadataTypes.Fundamental;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Create;
 
@@ -36,8 +36,8 @@ public class CreateMetadataTypeHandler : IRequestHandler<CreateMetadataTypeComma
         var existingResult = await Mediator.Send(existingMetadataTypeCommand, cancellationToken);
 
         if (!existingResult.IsError)
-            return MetadataTypeCommandErrors.NameAlreadyExists;
-        if (existingResult.FirstError != MetadataTypeQueryErrors.NotFound)
+            return MetadataTypeErrors.NameAlreadyExists;
+        if (existingResult.FirstError != MetadataTypeErrors.NotFound)
             return existingResult.Errors;
 
         var upsertMetadataTypeCommand  = new UpsertMetadataTypeCommand()

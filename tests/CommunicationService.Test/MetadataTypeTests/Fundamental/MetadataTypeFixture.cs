@@ -1,6 +1,6 @@
-using CommunicationService.MetadataTypes.DataStore;
+using CommunicationService.MetadataTypes.DataAccess;
 
-namespace CommunicationService.Test.MetadataTypeTests.Helpers;
+namespace CommunicationService.Test.MetadataTypeTests.Fundamental;
 
 public class MetadataTypeFixture : BaseFixture
 {

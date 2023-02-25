@@ -1,5 +1,4 @@
-using CommunicationService.MetadataTypes.DataStore;
-using MediatR;
+using CommunicationService.MetadataTypes.DataAccess;
 
 namespace CommunicationService.MetadataTypes.Features.Create;
 

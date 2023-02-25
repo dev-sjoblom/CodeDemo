@@ -1,7 +1,6 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.MetadataTypeTests.Helpers;
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.Fundamental.Helpers;
 using CommunicationService.Test.MetadataTypeTests.Model;
-using Newtonsoft.Json;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
@@ -10,7 +9,7 @@ public partial class MetadataTypeTests
     private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataType/{id}";
 
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task UpsertMetadataType_NewRegistration_ShouldReturnCreated(string metadataTypeName, string classificationName)
     {
         // arr
@@ -28,12 +27,9 @@ public partial class MetadataTypeTests
 
         // act
         var response = await client.PutAsync(UpsertMetadataTypeUrl(Guid.NewGuid()), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
-        
-        var responseObject = JsonConvert.DeserializeObject<MetadataTypeResponseItem>(stringContent)!;
+        var responseObject = await ValidateMetadataResponse(response, HttpStatusCode.Created);
         responseObject.Should().NotBeNull();
         responseObject.Name.Should().Be(metadataTypeName);
         responseObject.Classifications.Length.Should().Be(1);
@@ -41,7 +37,7 @@ public partial class MetadataTypeTests
     }
        
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName, ValidClassificationName)]
+    [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task UpsertMetadataType_UpdateInformation_ShouldReturnNoContent(string metadataTypeName, string classificationName)
     {
         // arr
@@ -60,10 +56,9 @@ public partial class MetadataTypeTests
 
         // act
         var response = await client.PutAsync(UpsertMetadataTypeUrl(metadataType.Id), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
-        
+
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent, stringContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
         
         var storedMetadataType = dbContext.MetadataType.FirstOrDefault(x => x.Id == metadataType.Id);
         storedMetadataType.Should().NotBeNull();
@@ -74,7 +69,7 @@ public partial class MetadataTypeTests
     }
     
     [Theory]
-    [InlineAutoMoq(ValidMetadataTypeName)]
+    [PopulateArguments(ValidMetadataTypeName)]
     public async Task UpsertMetadataType_UpdateWithBusyName_ShouldReturnConflict(string metadataTypeName)
     {
         // arr
@@ -82,7 +77,7 @@ public partial class MetadataTypeTests
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         dbContext.AddMetadataType(metadataTypeName);
         await dbContext.SaveChangesAsync();
-        
+        var url = UpsertMetadataTypeUrl(Guid.NewGuid());
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertMetadataTypeRequestParameters(
                 Name: metadataTypeName, 
@@ -90,10 +85,11 @@ public partial class MetadataTypeTests
             .AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(UpsertMetadataTypeUrl(Guid.NewGuid()), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
+        var response = await client.PutAsync(url, body);
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict, stringContent);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.Conflict, 
+            "MetadataType name already taken.");
     }
 }

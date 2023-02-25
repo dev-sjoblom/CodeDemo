@@ -1,6 +1,6 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.ClassificationTests.Model;
-using Newtonsoft.Json;
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.ClassificationTests.Requests;
+using CommunicationService.Test.Fundamental.Helpers;
 
 namespace CommunicationService.Test.ClassificationTests;
 
@@ -9,7 +9,7 @@ public partial class ClassificationTests
     private string UpsertClassificationUrl(Guid id) => $"/Classification/{id}";
 
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task UpsertClassification_NewRegistration_ShouldReturnCreated(string classificationName, string metadataTypeName)
     {
         // arr
@@ -17,6 +17,7 @@ public partial class ClassificationTests
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         dbContext.AddMetadataType(metadataTypeName);
         await dbContext.SaveChangesAsync();
+        var url = UpsertClassificationUrl(Guid.NewGuid());
 
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertClassificationRequestParameters(
@@ -25,14 +26,13 @@ public partial class ClassificationTests
             .AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(UpsertClassificationUrl(Guid.NewGuid()), body);
+        var response = await client.PutAsync(url, body);
         var stringContent = await response.Content.ReadAsStringAsync();
         
-        // assert   at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+        // assert
+        var responseObject = await ValidateClassificationResponse(response, 
+            HttpStatusCode.Created);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
-        
-        var responseObject = JsonConvert.DeserializeObject<ClassificationResponseItem>(stringContent)!;
         responseObject.Should().NotBeNull();
         responseObject.Name.Should().Be(classificationName);
         responseObject.MetadataTypes.Length.Should().Be(1);
@@ -40,40 +40,42 @@ public partial class ClassificationTests
     }
        
     [Theory]
-    [InlineAutoMoq(ValidClassificationName, ValidMetadataTypeName)]
-    public async Task UpsertClassification_UpdateInformation_ShouldReturnNoContent(string classificationName, string metadataTypeName)
+    [PopulateArguments(ValidClassificationName, ValidMetadataTypeName,
+        $"A{ValidClassificationName}", $"A{ValidMetadataTypeName}")]
+    public async Task UpsertClassification_UpdateInformation_ShouldReturnNoContent(
+        string updateClassificationName, string updateMetadataTypeName,
+        string registeredClassificationName, string registeredOtherMetadataTypeName)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-        dbContext.AddMetadataType(metadataTypeName);
-        var classification = dbContext.AddClassificationWithMetadata("someClassification", "someMetadataType");
+        dbContext.AddMetadataType(updateMetadataTypeName);
+        var classification = dbContext.AddClassificationWithMetadata(registeredClassificationName, registeredOtherMetadataTypeName);
         await dbContext.SaveChangesAsync();
         
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertClassificationRequestParameters(
-                Name: classificationName, 
-                MetadataTypes:new[] { metadataTypeName })
+                Name: updateClassificationName, 
+                MetadataTypes:new[] { updateMetadataTypeName })
             .AsJsonStringContent();
 
         // act
         var response = await client.PutAsync(UpsertClassificationUrl(classification.Id), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent, stringContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
         
         var storedClassification = dbContext.Classification.FirstOrDefault(x => x.Id == classification.Id);
         storedClassification.Should().NotBeNull();
         storedClassification?.Name.Should().Be(classification.Name);
         
-        var storedMetadataRelation = storedClassification?.MetadataTypes.FirstOrDefault(x => x.Name == metadataTypeName);
+        var storedMetadataRelation = storedClassification?.MetadataTypes.FirstOrDefault(x => x.Name == updateMetadataTypeName);
         storedMetadataRelation.Should().NotBeNull();
     }
     
     [Theory]
-    [InlineAutoMoq(ValidClassificationName)]
+    [PopulateArguments(ValidClassificationName)]
     public async Task UpsertClassification_UpdateWithBusyName_ShouldReturnConflict(string classificationName)
     {
         // arr
@@ -81,7 +83,7 @@ public partial class ClassificationTests
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var classification = dbContext.AddClassification(classificationName);
         await dbContext.SaveChangesAsync();
-        
+        var url = UpsertClassificationUrl(Guid.NewGuid());
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertClassificationRequestParameters(
                 Name: classificationName, 
@@ -89,10 +91,10 @@ public partial class ClassificationTests
             .AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(UpsertClassificationUrl(Guid.NewGuid()), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
+        var response = await client.PutAsync(url, body);
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict, stringContent);
+        await ValidateResponseProblem(response, HttpStatusCode.Conflict, 
+            "Classification name already taken");
     }
 }

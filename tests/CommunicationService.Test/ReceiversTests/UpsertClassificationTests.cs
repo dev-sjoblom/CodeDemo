@@ -1,8 +1,8 @@
-using CommunicationService.Test.ClassificationTests.Helpers;
-using CommunicationService.Test.ReceiversTests.Helpers;
+using CommunicationService.Test.ClassificationTests.Fundamental;
+using CommunicationService.Test.Fundamental.Helpers;
+using CommunicationService.Test.ReceiversTests.Fundamental;
 using CommunicationService.Test.ReceiversTests.Model;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ReceiversTests;
 
@@ -14,7 +14,7 @@ public partial class ReceiverTest
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
         "DATA")]
     public async Task UpsertReceiver_NewRegistration_ShouldReturnCreated(
         string uniqueName,
@@ -41,12 +41,11 @@ public partial class ReceiverTest
 
         // act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created, stringContent);
+        var responseObject = await ValidateReceiverResponse(response, 
+            HttpStatusCode.Created);
 
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem>(stringContent)!;
         responseObject.Should().NotBeNull();
         responseObject.UniqueName.Should().Be(uniqueName);
         responseObject.Email.Should().Be(email);
@@ -56,29 +55,26 @@ public partial class ReceiverTest
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
-        "DATA")]
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
+        new[] { "Customer", "Partner" }, 
+        ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_UpdateInformation_ShouldReturnNoContent(
-        string uniqueName,
-        string email,
+        string uniqueName, string email,
         string[] classifications,
-        string metadataTypeName,
-        string metadataValue)
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
         dbContext.AddClassificationWithMetadata(classifications, metadataTypeName);
-
         var receiver = dbContext.AddReceiverWithMetadata(
-            "newUniqueName",
-            "newEmail",
-            new[] { "newSomeClass" },
-            "newSomeMeteData",
-            "newData!");
+            $"A{uniqueName}",
+            $"A{email}",
+            new[] { $"A{classifications[0]}"},
+            $"A{metadataTypeName}",
+            $"A{metadataValue}");
         await dbContext.SaveChangesAsync();
-
+        var url = UpsertReceiverUrl(receiver.Id);
         var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequestParameters()
         {
@@ -89,23 +85,23 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(UpsertReceiverUrl(receiver.Id), body);
-        var stringContent = await response.Content.ReadAsStringAsync();
+        var response = await client.PutAsync(url, body);
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent, stringContent);
+        await ValidateResponse(response, HttpStatusCode.NoContent);
 
         var storedReceiver = await dbContext.Receiver.SingleAsync(x => x.Id == receiver.Id);
         storedReceiver.Should().NotBeNull();
         storedReceiver.UniqueName.Should().Be(uniqueName);
         storedReceiver.Email.Should().Be(email);
+        
         var metadata = storedReceiver.Metadatas.FirstOrDefault(x => x.MetadataType.Name == metadataTypeName)!;
         metadata.Should().NotBeNull();
         metadata.Data.Should().Be(metadataValue);
     }
 
     [Theory]
-    [InlineAutoMoq(
+    [PopulateArguments(
         ValidReceiverName, ValidReceiverEmail, 
         $"other{ValidReceiverName}", $"other{ValidReceiverEmail}", 
         ValidClassificationName)]
@@ -137,16 +133,21 @@ public partial class ReceiverTest
 
         // act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict, stringContent);
+        response.StatusCode.Should().Be(
+            HttpStatusCode.Conflict, 
+            "Receiver name already taken.");
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
+        ValidClassificationName, 
+        ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_CreateNewWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
-        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+        string uniqueName, string email, 
+        string classificationName, 
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -167,16 +168,21 @@ public partial class ReceiverTest
 
         // Act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.FailedDependency, 
+            "MetadataType not allowed.");
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
+        ValidClassificationName, 
+        ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_UpdateReceiverWithInvalidClassificationMetadataCombination_ReturnsFailedDependency(
-        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+        string uniqueName, string email, 
+        string classificationName, 
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -197,16 +203,21 @@ public partial class ReceiverTest
 
         // Act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.FailedDependency, 
+            "MetadataType not allowed.");
     }
 
     [Theory]
-    [InlineAutoMoq(ValidReceiverName, ValidReceiverEmail, ValidClassificationName, ValidMetadataTypeName, "DATA")]
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
+        ValidClassificationName, 
+        ValidMetadataTypeName, "DATA")]
     public async Task UpsertReceiver_MissingClassification_ReturnsBadRequest(
-        string uniqueName, string email, string classificationName, string metadataTypeName, string metadataValue)
+        string uniqueName, string email, 
+        string classificationName, 
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -227,16 +238,17 @@ public partial class ReceiverTest
 
         // Act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, stringContent);
-        stringContent.Should().Contain("Least one classification needs to be specified");
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.BadRequest, 
+            withTitle: ValidationProblemTitle,
+            withErrorResponseMessage: "Least one classification needs to be specified");
     }
 
 
     [Theory]
-    [InlineAutoMoq(
+    [PopulateArguments(
         ValidReceiverName, ValidReceiverEmail,
         $"Other{ValidClassificationName}",
         $"Other{ValidMetadataTypeName}",
@@ -276,9 +288,10 @@ public partial class ReceiverTest
 
         // Act
         var response = await client.PutAsync(url, body);
-        var stringContent = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency, stringContent);
+        await ValidateResponseProblem(response,
+            HttpStatusCode.FailedDependency,
+            withTitle: $"{MetadataTypeEntityName} not allowed.");
     }
 }

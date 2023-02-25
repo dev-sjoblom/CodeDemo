@@ -1,5 +1,4 @@
-using CommunicationService.Classifications.DataStore;
-using MediatR;
+using CommunicationService.Classifications.DataAccess;
 
 namespace CommunicationService.Classifications.Features.Create;
 

@@ -1,7 +1,8 @@
-using CommunicationService.Receivers.DataStore;
-using CommunicationService.Test.ClassificationTests.Helpers;
+using CommunicationService.Fundamental.DataAccess;
+using CommunicationService.Receivers.DataAccess;
+using CommunicationService.Test.ClassificationTests.Fundamental;
 
-namespace CommunicationService.Test.ReceiversTests.Helpers;
+namespace CommunicationService.Test.ReceiversTests.Fundamental;
 
 public static class ReceiverDbContextHelper
 {

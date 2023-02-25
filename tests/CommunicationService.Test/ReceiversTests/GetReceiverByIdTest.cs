@@ -1,6 +1,4 @@
-using CommunicationService.Test.ReceiversTests.Helpers;
-using CommunicationService.Test.ReceiversTests.Model;
-using Newtonsoft.Json;
+using CommunicationService.Test.ReceiversTests.Fundamental;
 
 namespace CommunicationService.Test.ReceiversTests;
 
@@ -9,18 +7,13 @@ public partial class ReceiverTest
     private string GetReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
 
     [Theory]
-    [InlineAutoMoq(
-        ValidReceiverName,
-        ValidReceiverEmail,
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail,
         new[] { "Customer", "Partner" },
-        ValidMetadataTypeName,
-        "DATA")]
+        ValidMetadataTypeName, "DATA")]
     public async Task GetReceiverById_WithCorrectId_ReturnsCorrectReceiver(
-        string uniqueName,
-        string email,
+        string uniqueName, string email,
         string[] classifications,
-        string metadataTypeName,
-        string metadataValue)
+        string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -34,13 +27,9 @@ public partial class ReceiverTest
 
         // act
         var response = await client.GetAsync(url);
-        var jsonResponse = await response.Content.ReadAsStringAsync();
 
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem>(jsonResponse)!;
-        responseObject.Should().NotBeNull();
+        var responseObject = await ValidateReceiverResponse(response, HttpStatusCode.OK);
         responseObject.UniqueName.Should().Be(receiver.UniqueName);
         responseObject.Email.Should().Be(receiver.Email);
         responseObject.Classifications.Length.Should().Be(classifications.Length);
@@ -61,9 +50,10 @@ public partial class ReceiverTest
     
         // act
         var response = await client.GetAsync(url);
-        var jsonResponse = await response.Content.ReadAsStringAsync();
         
         // assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound, jsonResponse);
+        await ValidateResponseProblem(response, 
+            HttpStatusCode.NotFound, 
+            WasNotFoundTitle(ReceiverEntityName));
     }
 }

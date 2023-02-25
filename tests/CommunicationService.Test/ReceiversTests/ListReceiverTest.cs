@@ -1,5 +1,5 @@
-using CommunicationService.Test.ReceiversTests.Helpers;
-using CommunicationService.Test.ReceiversTests.Model;
+using CommunicationService.Test.ReceiversTests.Fundamental;
+using CommunicationService.Test.ReceiversTests.Response;
 using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ReceiversTests;
@@ -9,18 +9,13 @@ public partial class ReceiverTest
     private string ListMetadataType() => "/Receiver";
 
     [Theory]
-    [InlineAutoMoq(
-        ValidReceiverName,
-        ValidReceiverEmail,
+    [PopulateArguments(ValidReceiverName, ValidReceiverEmail,
         new[] { "Customer", "Partner" },
-        ValidMetadataTypeName,
-        "DATA")]
+        ValidMetadataTypeName, "DATA")]
     public async Task ListReceiver_WithData_ReturnsList(
-            string uniqueName,
-            string email,
+            string uniqueName, string email,
             string[] classifications,
-            string metadataTypeName,
-            string metadataValue)
+            string metadataTypeName, string metadataValue)
     {
         // arr
         var dbContext = Fixture.CreateDbContext();
@@ -29,17 +24,15 @@ public partial class ReceiverTest
         var receiver =
             dbContext.AddReceiverWithMetadata(uniqueName, email, classifications, metadataTypeName, metadataValue);
         await dbContext.SaveChangesAsync();
-
+        var url = ListMetadataType();
         var client = Fixture.GetMockedClient(dbContext);
     
         // Act
-        var response = await client.GetAsync(ListMetadataType());
-        var jsonResponse = await response.Content.ReadAsStringAsync();
+        var response = await client.GetAsync(url);
     
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem[]>(jsonResponse)!;
+        var responseContent = await ValidateResponse(response, HttpStatusCode.OK);
+        var responseObject = JsonConvert.DeserializeObject<ReceiverResponseItem[]>(responseContent)!;
         
         responseObject.Should().NotBeNull();
         responseObject.Length.Should().Be(1);

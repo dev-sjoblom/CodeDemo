@@ -1,10 +1,8 @@
 using CommunicationService.MetadataTypes.Fundamental;
-using FluentValidation;
-using MediatR;
 
 namespace CommunicationService.MetadataTypes.Features.Upsert;
 
-[Route( Route)]
+[Route(Route)]
 [ApiExplorerSettings(GroupName = GroupNaming)]
 [Produces("application/json")]
 [ProducesResponseType(typeof(MetadataTypeResponse), StatusCodes.Status201Created)]
@@ -39,17 +37,19 @@ public class UpsertMetadataTypeController : MetadataTypeBase
         if (!validationResult.IsValid)
             return ValidationProblem(validationResult);
 
-        var command = new UpsertMetadataTypeCommand()
-        {
-            Id = id,
-            Classifications = request.Classifications,
-            Name = request.Name
-        };
-        
+        var command = CreateUpsertMetadataTypeCommand(id, request);
         var result = await Mediator.Send(command, cancellationToken);
 
         return result.Match(
             item => item.RegisteredAsNewItem ? CreatedAtMetadataType(item.MetadataType) : NoContent(),
             Problem);
     }
+
+    private static UpsertMetadataTypeCommand CreateUpsertMetadataTypeCommand(
+        Guid id, UpsertMetadataTypeRequest request) => new()
+    {
+        Id = id,
+        Classifications = request.Classifications,
+        Name = request.Name
+    };
 }
