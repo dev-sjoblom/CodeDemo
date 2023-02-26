@@ -1,8 +1,20 @@
 namespace CommunicationService.Test.MetadataTypeTests;
 
-public partial class MetadataTypeTests
+[Collection("Test collection")]
+public class GetMetadataTypeByIdTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+
+    public GetMetadataTypeByIdTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
     private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
@@ -10,17 +22,13 @@ public partial class MetadataTypeTests
         string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
+        var dbContext = ApiFactory.CreateDbContext();
         var metadataTypeItem = dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
         await dbContext.SaveChangesAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetMetadataTypeByIdUrl(metadataTypeItem.Id);
 
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // assert
         var responseObject = await ValidateMetadataResponse(response, 
@@ -35,13 +43,10 @@ public partial class MetadataTypeTests
     public async Task GetMetadataTypeById_WithIncorrectId_ReturnsNotFound(Guid id)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetMetadataTypeByIdUrl(id);
 
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // assert
         await ValidateResponseProblem(response, 

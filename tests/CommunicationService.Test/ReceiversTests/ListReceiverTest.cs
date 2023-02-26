@@ -4,9 +4,21 @@ using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ReceiversTests;
 
-public partial class ReceiverTest
+[Collection("Test collection")]
+public class ListReceiverTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public ListReceiverTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string ListMetadataType() => "/Receiver";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidReceiverName, ValidReceiverEmail,
@@ -18,17 +30,14 @@ public partial class ReceiverTest
             string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-       
+        var dbContext = ApiFactory.CreateDbContext();
         var receiver =
             dbContext.AddReceiverWithMetadata(uniqueName, email, classifications, metadataTypeName, metadataValue);
         await dbContext.SaveChangesAsync();
         var url = ListMetadataType();
-        var client = Fixture.GetMockedClient(dbContext);
     
         // Act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
     
         // Assert
         var responseContent = await ValidateResponse(response, HttpStatusCode.OK);

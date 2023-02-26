@@ -2,9 +2,21 @@ using CommunicationService.Test.ReceiversTests.Fundamental;
 
 namespace CommunicationService.Test.ReceiversTests;
 
-public partial class ReceiverTest
+[Collection("Test collection")]
+public class DeleteReceiverTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public DeleteReceiverTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string DeleteReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    
 
     [Theory]
     [PopulateArguments(ValidReceiverName, ValidReceiverEmail, 
@@ -16,17 +28,13 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
+        var dbContext = ApiFactory.CreateDbContext();
         var receiver = dbContext.AddReceiverWithMetadata(uniqueName, email, classifications, metadataTypeName, metadataValue);
         await dbContext.SaveChangesAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteReceiverByIdUrl(receiver.Id);
 
         // act
-        var response = await client.DeleteAsync(url);
+        var response = await Client.DeleteAsync(url);
 
         // assert
         await ValidateResponse(response, HttpStatusCode.NoContent);
@@ -39,14 +47,10 @@ public partial class ReceiverTest
     public async Task DeleteReceiverById_WithInCorrectId_ReturnNotFound()
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteReceiverByIdUrl(Guid.NewGuid());
 
         // act
-        var response = await client.DeleteAsync(url);
+        var response = await Client.DeleteAsync(url);
 
         // assert
         await ValidateResponseProblem(response, 

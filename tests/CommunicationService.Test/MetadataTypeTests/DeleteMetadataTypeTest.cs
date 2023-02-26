@@ -1,25 +1,34 @@
 namespace CommunicationService.Test.MetadataTypeTests;
  
-public partial class MetadataTypeTests
+[Collection("Test collection")]
+public class DeleteMetadataTypeTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+
+    public DeleteMetadataTypeTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string DeleteMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task DeleteMetadataTypeById_WithCorrectId_ReturnNoContent(string metadataTypeName, string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
+        var dbContext = ApiFactory.CreateDbContext();
         var classification = dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
         await dbContext.SaveChangesAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteMetadataTypeByIdUrl(classification.Id);
 
         // act
-        var response = await client.DeleteAsync(url);
+        var response = await Client.DeleteAsync(url);
 
         // assert
         await ValidateResponse(response, HttpStatusCode.NoContent);
@@ -32,14 +41,10 @@ public partial class MetadataTypeTests
     public async Task DeleteClassificationById_WithInCorrectId_ReturnNotFound()
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteMetadataTypeByIdUrl(Guid.NewGuid());
 
         // act
-        var response = await client.DeleteAsync(url);
+        var response = await Client.DeleteAsync(url);
         
         // assert
         await ValidateResponseProblem(response,

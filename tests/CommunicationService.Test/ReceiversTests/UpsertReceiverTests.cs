@@ -6,12 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunicationService.Test.ReceiversTests;
 
-public partial class ReceiverTest
+[Collection("Test collection")]
+public class UpsertReceiverTests : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    
+    private CommunicationApiFactory ApiFactory { get; }
+    public UpsertReceiverTests(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string UpsertReceiverUrl(Guid id)
     {
         return $"/Receiver/{id}";
     }
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidReceiverName, ValidReceiverEmail, new[] { "Customer", "Partner" }, ValidMetadataTypeName,
@@ -24,13 +37,10 @@ public partial class ReceiverTest
         string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddClassificationWithMetadata(classifications, metadataTypeName);
         await dbContext.SaveChangesAsync();
         var url = UpsertReceiverUrl(Guid.NewGuid());
-
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -40,7 +50,7 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // assert
         var responseObject = await ValidateReceiverResponse(response, 
@@ -64,8 +74,7 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddClassificationWithMetadata(classifications, metadataTypeName);
         var receiver = dbContext.AddReceiverWithMetadata(
             $"A{uniqueName}",
@@ -75,7 +84,6 @@ public partial class ReceiverTest
             $"A{metadataValue}");
         await dbContext.SaveChangesAsync();
         var url = UpsertReceiverUrl(receiver.Id);
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -85,12 +93,15 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // assert
         await ValidateResponse(response, HttpStatusCode.NoContent);
-
-        var storedReceiver = await dbContext.Receiver.SingleAsync(x => x.Id == receiver.Id);
+        await dbContext.Entry(receiver).ReloadAsync();
+        var storedReceiver = await dbContext.Receiver
+            .Include(x => x.Metadatas)
+            .SingleAsync(x => x.Id == receiver.Id);
+        
         storedReceiver.Should().NotBeNull();
         storedReceiver.UniqueName.Should().Be(uniqueName);
         storedReceiver.Email.Should().Be(email);
@@ -111,16 +122,12 @@ public partial class ReceiverTest
         string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddReceiverWithClassifications(name, email, new[] { classificationName });
         var receiver =
             dbContext.AddReceiverWithClassifications(otherName, otherEmail,
                 new[] { classificationName });
-
         await dbContext.SaveChangesAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = UpsertReceiverUrl(Guid.NewGuid());
         var body = new UpsertReceiverRequestParameters()
             {
@@ -132,7 +139,7 @@ public partial class ReceiverTest
             .AsJsonStringContent();
 
         // act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // assert
         response.StatusCode.Should().Be(
@@ -150,14 +157,11 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddMetadataType(metadataTypeName);
         dbContext.AddClassification(classificationName);
         await dbContext.SaveChangesAsync();
-
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -167,7 +171,7 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // Act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // Assert
         await ValidateResponseProblem(response, 
@@ -185,14 +189,11 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddMetadataType(metadataTypeName);
         dbContext.AddReceiverWithClassifications(uniqueName, email, new[] { classificationName });
         await dbContext.SaveChangesAsync();
-
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -202,7 +203,7 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // Act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // Assert
         await ValidateResponseProblem(response, 
@@ -220,14 +221,11 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddMetadataTypeWithClassification(metadataTypeName, classificationName);
         var receiver = dbContext.AddReceiverWithClassifications(uniqueName, email, new[] { classificationName });
         await dbContext.SaveChangesAsync();
         var url = UpsertReceiverUrl(receiver.Id);
-
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new UpsertReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -237,7 +235,7 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // Act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // Assert
         await ValidateResponseProblem(response, 
@@ -264,16 +262,13 @@ public partial class ReceiverTest
         string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddMetadataTypeWithClassification(metadataType, classification);
         dbContext.AddMetadataTypeWithClassification(otherMetadataType, otherClassification);
         dbContext.AddReceiverWithClassifications(uniqueName, email,
             new[] { classification, otherClassification });
         await dbContext.SaveChangesAsync();
-
         var url = UpsertReceiverUrl(Guid.NewGuid());
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateReceiverRequestParameters()
         {
             UniqueName = uniqueName,
@@ -287,7 +282,7 @@ public partial class ReceiverTest
         }.AsJsonStringContent();
 
         // Act
-        var response = await client.PutAsync(url, body);
+        var response = await Client.PutAsync(url, body);
 
         // Assert
         await ValidateResponseProblem(response,

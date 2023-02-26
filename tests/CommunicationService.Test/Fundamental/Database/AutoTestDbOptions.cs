@@ -8,5 +8,5 @@ public class AutoTestDbOptions
     public required string Password { get; set; }
     public required string DbPrefix { get; set; }
 
-    public string? GetConnectionString(string testInstance) => $"host={Host};database={DbPrefix}{testInstance};username={Username};password={Password}";
+    public string? GetConnectionString() => $"host={Host};database={DbPrefix};username={Username};password={Password}";
 }

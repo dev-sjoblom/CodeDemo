@@ -2,19 +2,26 @@ using CommunicationService.Test.ClassificationTests.Fundamental;
 using CommunicationService.Test.Fundamental.Helpers;
 using CommunicationService.Test.MetadataTypeTests.Fundamental;
 using CommunicationService.Test.MetadataTypeTests.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunicationService.Test.MetadataTypeTests;
 
-public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
+[Collection("Test collection")]
+public class CreateMetadataTypeTest : IAsyncLifetime
 {
-    private MetadataTypeFixture Fixture { get; }
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
 
-    public MetadataTypeTests(MetadataTypeFixture fixture)
+    public CreateMetadataTypeTest(CommunicationApiFactory apiFactory)
     {
-        Fixture = fixture;
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
     }
 
     private string CreateNewMetadataUrl() => $"/MetadataType";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
@@ -25,27 +32,25 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddClassification(classificationName);
         await dbContext.SaveChangesAsync();
-        
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataTypeName,
                 Classifications: new[] { classificationName })
             .AsJsonStringContent();
 
         // act
-        var response = await client.PostAsync(CreateNewMetadataUrl(), body);
+        var response = await Client.PostAsync(CreateNewMetadataUrl(), body);
 
         // assert
         var responseObject = await ValidateMetadataResponse(response, HttpStatusCode.Created);
         responseObject.Name.Should().Be(metadataTypeName);
         responseObject.Classifications.Should().Contain(classificationName);
         
-        var storedClassification = dbContext.Classification.FirstOrDefault(x => x.Name == classificationName);
+        var storedClassification = await dbContext.Classification
+            .Include(x => x.MetadataTypes)
+            .FirstOrDefaultAsync(x => x.Name == classificationName);
         storedClassification.Should().NotBeNull();
 
         var storedMetadataRelation = storedClassification?.MetadataTypes.FirstOrDefault();
@@ -60,16 +65,14 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
     public async Task CreateNewMetadataType_WithIncorrectName_ReturnsBadRequest(string metadataTypeName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
+        var dbContext = ApiFactory.CreateDbContext();
         var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataTypeName,
                 Classifications: Array.Empty<string>())
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateNewMetadataUrl(), body);
+        var response = await Client.PostAsync(CreateNewMetadataUrl(), body);
 
         // Assert
         await ValidateResponseProblem(response, 
@@ -83,16 +86,13 @@ public partial class MetadataTypeTests : IClassFixture<MetadataTypeFixture>
         string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateMetadataTypeRequestParameters(
                 Name: metadataTypeName,
                 Classifications: new[] { classificationName })
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateNewMetadataUrl(), body);
+        var response = await Client.PostAsync(CreateNewMetadataUrl(), body);
 
         // Assert
         await ValidateResponseProblem(response, 

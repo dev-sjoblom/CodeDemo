@@ -2,9 +2,21 @@ using CommunicationService.Test.ReceiversTests.Fundamental;
 
 namespace CommunicationService.Test.ReceiversTests;
 
-public partial class ReceiverTest
+[Collection("Test collection")]
+public class GetReceiverByIdTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public GetReceiverByIdTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string GetReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidReceiverName, ValidReceiverEmail,
@@ -16,17 +28,14 @@ public partial class ReceiverTest
         string metadataTypeName, string metadataValue)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         var receiver =
             dbContext.AddReceiverWithMetadata(uniqueName, email, classifications, metadataTypeName, metadataValue);
         await dbContext.SaveChangesAsync();
-        
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetReceiverByIdUrl(receiver.Id);
 
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // assert
         var responseObject = await ValidateReceiverResponse(response, HttpStatusCode.OK);
@@ -43,13 +52,10 @@ public partial class ReceiverTest
     public async Task GetReceiverById_WithIncorrectId_ReturnsNotFound(Guid id)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetReceiverByIdUrl(id);
-    
+        
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
         
         // assert
         await ValidateResponseProblem(response, 

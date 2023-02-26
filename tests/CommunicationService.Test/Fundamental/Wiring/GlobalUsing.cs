@@ -3,11 +3,9 @@ global using static CommunicationService.Test.MetadataTypeTests.Fundamental.Meta
 global using static CommunicationService.Test.MetadataTypeTests.Fundamental.MetadataTypeDbContextHelper;
 global using static CommunicationService.Test.ClassificationTests.Fundamental.ClassificationEntityCreator;
 global using static CommunicationService.Test.ReceiversTests.Fundamental.ReceiversConstants;
-global using CommunicationService.Test.Fundamental;
 global using Xunit;
 global using System.Net;
 global using FluentAssertions;
-global using CommunicationService.Fundamental;
 global using static CommunicationService.Test.Fundamental.Response.ResponseProblemHelper;
 global using static CommunicationService.Test.Fundamental.Response.ResponseValidator;
 global using static CommunicationService.Test.ClassificationTests.Response.ClassificationResponseValidator;

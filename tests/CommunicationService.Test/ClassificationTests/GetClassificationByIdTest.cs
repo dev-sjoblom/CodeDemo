@@ -2,9 +2,19 @@ using CommunicationService.Test.ClassificationTests.Fundamental;
 
 namespace CommunicationService.Test.ClassificationTests;
 
-public partial class ClassificationTests
+[Collection("Test collection")]
+public class GetClassificationByIdTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public GetClassificationByIdTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }    
     private string GetClassificationByIdUrl(Guid id) => $"/Classification/{id}";
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
@@ -12,17 +22,15 @@ public partial class ClassificationTests
         string metadataTypeName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
 
         var classificationItem = dbContext.AddClassificationWithMetadata(classificationName, metadataTypeName);
         await dbContext.SaveChangesAsync();
 
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetClassificationByIdUrl(classificationItem.Id);
 
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // assert
         var responseObject = await ValidateClassificationResponse(response,
@@ -38,13 +46,10 @@ public partial class ClassificationTests
     public async Task GetClassificationById_WithIncorrectId_ReturnsNotFound(Guid id)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var url = GetClassificationByIdUrl(id);
 
         // act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // assert
         await ValidateResponseProblem(response,

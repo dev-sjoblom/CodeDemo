@@ -58,8 +58,9 @@ public class UpsertMetadataTypeHandler : IRequestHandler<UpsertMetadataTypeComma
         else
         {
             metadataType = existingMetadataTypeResult.Value;
-            metadataType.Name = request.Name;
+
             DbContext.MetadataType.Update(metadataType);
+            metadataType.Name = request.Name;
         }
 
         metadataType.Classifications.RemoveAll(x => true);

@@ -4,25 +4,33 @@ using Newtonsoft.Json;
 
 namespace CommunicationService.Test.ClassificationTests;
 
-public partial class ClassificationTests
+[Collection("Test collection")]
+public class ListClassificationTest : IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public ListClassificationTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+    
     private string ListClassificationUrl() => "/Classification";
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     public async Task ListClassification_WithData_ReturnsList(string classificationName, string metadataName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddClassificationWithMetadata(classificationName, metadataName);
         await dbContext.SaveChangesAsync();
         var url = ListClassificationUrl();
-        var client = Fixture.GetMockedClient(dbContext);
 
         // Act
-        var response = await client.GetAsync(url);
+        var response = await Client.GetAsync(url);
 
         // Assert
         var responseContent = await ValidateResponse(response, HttpStatusCode.OK);

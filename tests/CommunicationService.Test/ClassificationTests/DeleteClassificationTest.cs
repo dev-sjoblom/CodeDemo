@@ -2,9 +2,20 @@ using CommunicationService.Test.ClassificationTests.Fundamental;
 
 namespace CommunicationService.Test.ClassificationTests;
 
-public partial class ClassificationTests
+[Collection("Test collection")]
+public class DeleteClassificationTest: IAsyncLifetime
 {
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public DeleteClassificationTest(CommunicationApiFactory apiFactory)
+    {
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
+    }
+
     private string DeleteClassificationByIdUrl(Guid id) => $"/Classification/{id}";
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
@@ -12,19 +23,15 @@ public partial class ClassificationTests
         string metadataTypeName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
 
         var classification = dbContext.AddClassificationWithMetadata(classificationName, metadataTypeName);
         await dbContext.SaveChangesAsync();
 
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteClassificationByIdUrl(classification.Id);
 
         // act
-        var response = await client.DeleteAsync(url);
-        var stringContent = await response.Content.ReadAsStringAsync();
-
+        var response = await Client.DeleteAsync(url);
         // assert
         await ValidateResponse(response, HttpStatusCode.NoContent);
 
@@ -36,14 +43,10 @@ public partial class ClassificationTests
     public async Task DeleteClassificationById_WithInCorrectId_ReturnNotFound()
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
-        var client = Fixture.GetMockedClient(dbContext);
         var url = DeleteClassificationByIdUrl(Guid.NewGuid());
 
         // act
-        var response = await client.DeleteAsync(url);
+        var response = await Client.DeleteAsync(url);
 
         // assert
         await ValidateResponseProblem(response, 

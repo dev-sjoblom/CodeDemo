@@ -1,18 +1,24 @@
 using CommunicationService.Test.ClassificationTests.Fundamental;
 using CommunicationService.Test.ClassificationTests.Requests;
 using CommunicationService.Test.Fundamental.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunicationService.Test.ClassificationTests;
 
-public partial class ClassificationTests : IClassFixture<ClassificationFixture>
+[Collection("Test collection")]
+public class CreateClassificationTest : IAsyncLifetime
 {
-    private ClassificationFixture Fixture { get; set; }
-    public ClassificationTests(ClassificationFixture fixture)
+    private HttpClient Client { get; }
+    private CommunicationApiFactory ApiFactory { get; }
+    public CreateClassificationTest(CommunicationApiFactory apiFactory)
     {
-        Fixture = fixture;
+        ApiFactory = apiFactory;
+        Client = ApiFactory.HttpClient;
     }
 
     private string CreateClassificationUrl() => $"/Classification";
+    public Task InitializeAsync() => Task.CompletedTask;
+    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
     
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
@@ -21,26 +27,27 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     public async Task CreateNewClassification_WithCorrectName_ShouldStoreDataAndReturnCreated(string classificationName, string metadataTypeName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         var url = CreateClassificationUrl();
         dbContext.AddMetadataType(metadataTypeName);
         await dbContext.SaveChangesAsync();
         
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                  MetadataTypes:new[] { metadataTypeName })
             .AsJsonStringContent();
 
         // act
-        var response = await client.PostAsync(url, body);
+        var response = await Client.PostAsync(url, body);
         
         // assert
         await ValidateClassificationResponse(response,
             HttpStatusCode.Created);
         
-        var storedClassification = dbContext.Classification.FirstOrDefault(x => x.Name == classificationName);
+        var storedClassification = await dbContext.Classification
+            .Include(x => x.MetadataTypes)
+            .Where(x => x.Name == classificationName)
+            .SingleOrDefaultAsync();
         storedClassification.Should().NotBeNull();
         
         var storedMetadataRelation = storedClassification?.MetadataTypes.FirstOrDefault();
@@ -55,16 +62,13 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     public async Task CreateNewClassification_WithIncorrectName_ReturnsBadRequest(string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes: Array.Empty<string>())
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateClassificationUrl(), body);
+        var response = await Client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         await ValidateResponseProblem(response, 
@@ -78,16 +82,13 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     public async Task CreateNewClassification_WithNonExistingMetadataType_ReturnsNotFound(string classificationName, string metadataTypeName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes:new[] { metadataTypeName })
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateClassificationUrl(), body);
+        var response = await Client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         await ValidateResponseProblem(response,
@@ -100,19 +101,17 @@ public partial class ClassificationTests : IClassFixture<ClassificationFixture>
     public async Task CreateNewClassification_WithNameTaken_ReturnsBadRequest(string classificationName)
     {
         // arr
-        var dbContext = Fixture.CreateDbContext();
-        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var dbContext = ApiFactory.CreateDbContext();
         dbContext.AddClassification(classificationName);
         await dbContext.SaveChangesAsync();
         
-        var client = Fixture.GetMockedClient(dbContext);
         var body = new CreateClassificationRequestParameters(
                 Name: classificationName, 
                 MetadataTypes: Array.Empty<string>())
             .AsJsonStringContent();
 
         // Act
-        var response = await client.PostAsync(CreateClassificationUrl(), body);
+        var response = await Client.PostAsync(CreateClassificationUrl(), body);
         
         // Assert
         await ValidateResponseProblem(response,

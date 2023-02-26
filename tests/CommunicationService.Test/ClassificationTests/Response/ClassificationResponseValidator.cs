@@ -8,12 +8,13 @@ public static class ClassificationResponseValidator
         HttpResponseMessage responseMessage,
         HttpStatusCode expectedStatusCode)
     {
-        responseMessage.StatusCode.Should().Be(expectedStatusCode);
         var stringContent = await responseMessage.Content.ReadAsStringAsync();
+
+        responseMessage.StatusCode.Should().Be(expectedStatusCode, stringContent);
         var classificationResponseItem = JsonConvert.DeserializeObject<ClassificationResponseItem>(stringContent)!;
-        classificationResponseItem.Id.Should().NotBeEmpty();
-        classificationResponseItem.Name.Should().NotBeNull();
-        classificationResponseItem.MetadataTypes.Should().NotBeNull();
+        classificationResponseItem.Id.Should().NotBeEmpty(stringContent);
+        classificationResponseItem.Name.Should().NotBeNull(stringContent);
+        classificationResponseItem.MetadataTypes.Should().NotBeNull(stringContent);
         return classificationResponseItem;
     }
 }
