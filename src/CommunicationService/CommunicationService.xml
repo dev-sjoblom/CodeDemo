@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommunicationService</name>
+    </assembly>
+    <members>
+        <member name="M:CommunicationService.Classifications.Features.Create.CreateClassificationController.PostClassification(CommunicationService.Classifications.Features.Create.CreateClassificationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new classification
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:CommunicationService.Classifications.Features.Create.CreateClassificationRequest">
+            <summary>
+            Create classification request parameters
+            </summary>
+        </member>
+        <member name="P:CommunicationService.Classifications.Features.Create.CreateClassificationRequest.Name">
+            <summary>
+            Name of classification
+            </summary>
+        </member>
+        <member name="P:CommunicationService.Classifications.Features.Create.CreateClassificationRequest.MetadataTypes">
+            <summary>
+            List of metadatas available for this classification
+            </summary>
+        </member>
+        <member name="M:CommunicationService.Classifications.Features.Delete.DeleteClassificationController.DeleteClassificationById(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Delete a classification by it's id.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Classifications.Features.GetById.GetClassificationByIdController.GetClassificationById(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get a classification by it's id.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Classifications.Features.List.ListClassificationsController.ListClassifications(System.Threading.CancellationToken)">
+            <summary>
+            Get all classifications.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Classifications.Features.Upsert.UpsertClassificationController.UpsertClassification(System.Guid,CommunicationService.Classifications.Features.Upsert.UpsertClassificationRequest,System.Threading.CancellationToken)">
+            <summary>
+            Upsert a classification
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.Create.CreateMetadataTypeController.CreateMetadataType(CommunicationService.MetadataTypes.Features.Create.CreateMetadataTypeRequest,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new Metadata Type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:CommunicationService.MetadataTypes.Features.Create.CreateMetadataTypeRequest">
+            <summary>
+            Request parameters for new Metadata Type
+            </summary>
+        </member>
+        <member name="P:CommunicationService.MetadataTypes.Features.Create.CreateMetadataTypeRequest.Name">
+            <summary>
+            Name of Metadata Type
+            </summary>
+        </member>
+        <member name="P:CommunicationService.MetadataTypes.Features.Create.CreateMetadataTypeRequest.Classifications">
+            <summary>
+            List of the classifications that enables the Metadata Type.
+            </summary>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.Delete.DeleteMetadataTypeController.DeleteMetadataTypeById(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Delete a Metadata Type by it's id.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.GetById.GetMetadataTypeByIdController.GetMetadataTypeById(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get Metadata Type by Id.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.GetByName.GetMetadataTypeByNameController.GetMetadataTypeByName(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get a Metadata Type by it's name.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.List.ListMetadataTypesController.ListMetadataTypes(System.Threading.CancellationToken)">
+            <summary>
+            Get a list of all metadata types.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.MetadataTypes.Features.Upsert.UpsertMetadataTypeController.UpsertMetadataType(System.Guid,CommunicationService.MetadataTypes.Features.Upsert.UpsertMetadataTypeRequest,System.Threading.CancellationToken)">
+            <summary>
+            Upsert a Metadata Type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:CommunicationService.Migrations.init">
+            <inheritdoc />
+        </member>
+        <member name="M:CommunicationService.Migrations.init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:CommunicationService.Migrations.init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:CommunicationService.Migrations.init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:CommunicationService.Receivers.Features.Create.CreateReceiverController.PostReceiver(CommunicationService.Receivers.Features.Create.CreateReceiverRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create a new receiver
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Receivers.Features.Delete.DeleteReceiverController.DeleteReceiver(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Deletes a receiver by it's id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Receivers.Features.GetById.GetReceiverByIdController.GetReceiverById(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get a Receiver by it's Id.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Receivers.Features.List.ListReceiverController.ListReceivers(System.Threading.CancellationToken)">
+            <summary>
+            List all receivers.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommunicationService.Receivers.Features.Upsert.UpsertReceiverController.Upsert(System.Guid,CommunicationService.Receivers.Features.Upsert.UpsertReceiverRequest,System.Threading.CancellationToken)">
+            <summary>
+            Upsert a receiver.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

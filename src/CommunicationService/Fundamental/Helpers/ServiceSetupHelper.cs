@@ -12,14 +12,16 @@ public static class ServiceSetupHelper
         var services = builder.Services;
         var configuration = builder.Configuration;
 
-        builder.Services.AddOptions<DbOptions>()
-            .Bind(configuration.GetSection(DbOptions.Section))
-            .ValidateOnStart();
+        // builder.Services.AddOptions<DbOptions>()
+        //     .Bind(configuration.GetSection(DbOptions.Section))
+        //     .ValidateOnStart();
 
-        var options = configuration.GetSection(DbOptions.Section).Get<DbOptions>() ??
-                      throw new ApplicationException("DbOptions missing");
-        var connectionString = options.GetConnectionString();
+        // var options = configuration.GetSection(DbOptions.Section).Get<DbOptions>() ??
+        //               throw new ApplicationException("DbOptions missing");
+        // var connectionString = options.GetConnectionString();
 
+        var connectionString = configuration.GetCommunicationServiceConnectionString();
+        
         builder.Host.ConfigureLogging();
 
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));

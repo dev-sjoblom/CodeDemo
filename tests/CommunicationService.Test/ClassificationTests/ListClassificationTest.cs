@@ -17,7 +17,7 @@ public class ListClassificationTest : IAsyncLifetime
     
     private string ListClassificationUrl() => "/Classification";
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]

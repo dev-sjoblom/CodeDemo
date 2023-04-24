@@ -14,7 +14,7 @@ public class GetMetadataTypeByIdTest : IAsyncLifetime
     private string GetMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]

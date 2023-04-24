@@ -16,7 +16,7 @@ public class GetReceiverByIdTest : IAsyncLifetime
     private string GetReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidReceiverName, ValidReceiverEmail,

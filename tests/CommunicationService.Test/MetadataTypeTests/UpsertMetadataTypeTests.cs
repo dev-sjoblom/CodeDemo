@@ -22,7 +22,7 @@ public class UpsertMetadataTypeTests : IAsyncLifetime
     private string UpsertMetadataTypeUrl(Guid id) => $"/MetadataType/{id}";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]

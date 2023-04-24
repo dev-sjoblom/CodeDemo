@@ -4,9 +4,15 @@ using CommunicationService.Fundamental.DataAccess;
 using CommunicationService.Test.Fundamental.Database;
 using CommunicationService.Test.Fundamental.Helpers;
 using FakeItEasy.Sdk;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using Respawn;
 
@@ -19,6 +25,28 @@ public class CommunicationApiFactory : WebApplicationFactory<Program>, IAsyncLif
     private DbConnection _dbConnection = default!;
     private Respawner _respawner = default!;
 
+    // public override void ConfigurateWebHost(IWebHostBuilder builder)
+    // {
+    //     builder.ConfigureTestServices(services =>
+    //     {
+    //         services.AddSingleton(CreateDbContext);
+    //     });
+    //     // builder.ConfigureServices(services =>
+    //     // {
+    //     //     services.AddSingleton(CreateDbContext);
+    //     // });
+    // }
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureTestServices(services =>
+        {
+            // services.RemoveAll(typeof(IDbContextFactorySource<CommunicationDbContext, >));
+            services.AddDbContextFactory<CommunicationDbContext, CommunicationDbContextFactory>(options =>
+                options.UseNpgsql(_connectionString));
+        });
+        base.ConfigureWebHost(builder);
+    }
+
     public CommunicationApiFactory()
     {
         var configuration = ConfigurationHelper.InitConfiguration();
@@ -30,7 +58,7 @@ public class CommunicationApiFactory : WebApplicationFactory<Program>, IAsyncLif
     
     public CommunicationDbContext CreateDbContext() => DatabaseTestHelper.CreateDbContext(_connectionString);
 
-    public async Task ResetDatabaseAsync()
+    public async Task ResetDatabase()
     {
         await _respawner.ResetAsync(_dbConnection);
     }
@@ -38,26 +66,26 @@ public class CommunicationApiFactory : WebApplicationFactory<Program>, IAsyncLif
     public async Task InitializeAsync()
     {
         _dbConnection = new NpgsqlConnection(_connectionString);
+        HttpClient = CreateClient();
         await _dbConnection.OpenAsync();
         _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions()
         {
             DbAdapter = DbAdapter.Postgres,
             SchemasToInclude = new[] { "public" }
         });
-        CreatedMockedClient();
     }
     
-    private void CreatedMockedClient()
-    {
-        HttpClient = CreateClient();        
-        // var dbContext = DatabaseTestHelper.CreateDbContext(_connectionString);
-        //
-        // var clientFactory = WithWebHostBuilder(builder =>
-        //     builder.ConfigureServices(services =>
-        //         services.AddSingleton(dbContext)));
-        //
-        // HttpClient = clientFactory.CreateClient();
-    }
+    // private void CreatedMockedClient()
+    // {
+    //     HttpClient = CreateClient();        
+    //     // var dbContext = DatabaseTestHelper.CreateDbContext(_connectionString);
+    //     //
+    //     // var clientFactory = WithWebHostBuilder(builder =>
+    //     //     builder.ConfigureServices(services =>
+    //     //         services.AddSingleton(dbContext)));
+    //     //
+    //     // HttpClient = clientFactory.CreateClient();
+    // }
     
     public new Task DisposeAsync()
     {

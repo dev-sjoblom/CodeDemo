@@ -21,7 +21,7 @@ public class CreateMetadataTypeTest : IAsyncLifetime
     private string CreateNewMetadataUrl() => $"/MetadataType";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]

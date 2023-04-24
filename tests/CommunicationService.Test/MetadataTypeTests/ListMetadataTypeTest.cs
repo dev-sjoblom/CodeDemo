@@ -19,7 +19,7 @@ public class ListMetadataTypeTest : IAsyncLifetime
     private string GetMetadataType() => "/MetadataType";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
     [Theory]
     [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]
     public async Task ListMetadataTypes_WithData_ReturnsList(string metadataTypeName, string classification)

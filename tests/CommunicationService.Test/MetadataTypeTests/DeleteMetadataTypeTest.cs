@@ -15,7 +15,7 @@ public class DeleteMetadataTypeTest : IAsyncLifetime
     private string DeleteMetadataTypeByIdUrl(Guid id) => $"/MetadataType/{id}";
     
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidMetadataTypeName, ValidClassificationName)]

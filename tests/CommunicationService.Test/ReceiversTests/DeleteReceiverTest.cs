@@ -15,7 +15,7 @@ public class DeleteReceiverTest : IAsyncLifetime
     
     private string DeleteReceiverByIdUrl(Guid id) => $"/Receiver/{id}";
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
     
 
     [Theory]

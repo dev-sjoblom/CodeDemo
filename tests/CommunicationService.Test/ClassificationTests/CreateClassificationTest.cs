@@ -18,13 +18,13 @@ public class CreateClassificationTest : IAsyncLifetime
 
     private string CreateClassificationUrl() => $"/Classification";
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
     
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
     [PopulateArguments(ValidShortestClassificationName, ValidShortestMetadataTypeName)]
     [PopulateArguments(ValidLongestClassificationName, ValidLongestMetadataTypeName)]
-    public async Task CreateNewClassification_WithCorrectName_ShouldStoreDataAndReturnCreated(string classificationName, string metadataTypeName)
+    public async Task Create_StoreDataAndReturnCreated_WhenAllDataIsValid(string classificationName, string metadataTypeName)
     {
         // arr
         var dbContext = ApiFactory.CreateDbContext();
@@ -59,7 +59,7 @@ public class CreateClassificationTest : IAsyncLifetime
     [PopulateArguments("a a")]
     [PopulateArguments($"{ValidClassificationName}&")]
     [PopulateArguments($"{ValidLongestClassificationName}a")]
-    public async Task CreateNewClassification_WithIncorrectName_ReturnsBadRequest(string classificationName)
+    public async Task Create_ReturnBadRequest_WhenNameIsIncorrect(string classificationName)
     {
         // arr
         var body = new CreateClassificationRequestParameters(
@@ -79,7 +79,7 @@ public class CreateClassificationTest : IAsyncLifetime
     
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
-    public async Task CreateNewClassification_WithNonExistingMetadataType_ReturnsNotFound(string classificationName, string metadataTypeName)
+    public async Task Create_ReturnNotFound_WithInvalidMetadataType(string classificationName, string metadataTypeName)
     {
         // arr
         var body = new CreateClassificationRequestParameters(
@@ -98,7 +98,7 @@ public class CreateClassificationTest : IAsyncLifetime
     
     [Theory]
     [PopulateArguments(ValidClassificationName)]
-    public async Task CreateNewClassification_WithNameTaken_ReturnsBadRequest(string classificationName)
+    public async Task Create_ReturnBadRequest_WhenNameIsTaken(string classificationName)
     {
         // arr
         var dbContext = ApiFactory.CreateDbContext();

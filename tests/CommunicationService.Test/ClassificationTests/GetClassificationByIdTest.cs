@@ -14,7 +14,7 @@ public class GetClassificationByIdTest : IAsyncLifetime
     }    
     private string GetClassificationByIdUrl(Guid id) => $"/Classification/{id}";
     public Task InitializeAsync() => Task.CompletedTask;
-    public Task DisposeAsync() => ApiFactory.ResetDatabaseAsync();
+    public Task DisposeAsync() => ApiFactory.ResetDatabase();
 
     [Theory]
     [PopulateArguments(ValidClassificationName, ValidMetadataTypeName)]
